@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/03 17:46:56 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/04 21:00:26 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@
 # define TILE_SIZE 32
 # define WINW 1280
 # define WINH 720
+
+# define MINIMAP_SCALE_FACTOR 0.5
 
 enum {
 	DIR_NO,
@@ -73,10 +75,11 @@ typedef struct s_player {
 	float	y;
 	float	angle;
 	float	fov;
-	int		turndir;
-	int		key[8];
-	float	turnspeed;
+	int		ver_dir;
+	int		hor_dir;
 	float	movespeed;
+	int		turndir;
+	float	turnspeed;
 }	t_player;
 
 typedef struct s_ray
@@ -85,9 +88,6 @@ typedef struct s_ray
 	float	wall_hit_x;
 	float	wall_hit_y;
 	float	distance;
-	float	x;
-	float	y;
-	int		direction;
 	int		was_hit_vertical;
 	int		is_ray_facing_up;
 	int		is_ray_facing_down;
@@ -129,6 +129,7 @@ typedef struct s_data {
 }	t_data;
 
 typedef struct s_cub {
+	int			run;
 	t_img		*img;
 	t_img		*cub;
 	t_ray		*rays;
@@ -165,7 +166,12 @@ void	player_config(t_cub *cub);
 
 // -----------------------------  SETUP  ----------------------------- //
 
-
+void	set_cub(t_cub *cub);
+void	my_pixel_put(t_img *img, int x, int y, int color);
+void	update(t_cub *cub);
+void	render(t_cub *cub);
+void	set_map(t_cub *cub);
+void	my_mlx_pixel_put(t_img *img, int x, int y, int color);
 // ---------------------------  RENDERING  --------------------------- //
 
 

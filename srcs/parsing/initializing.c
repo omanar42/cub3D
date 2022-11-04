@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 18:03:25 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/03 17:47:52 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/04 18:53:34 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	init_data(t_cub *cub)
 {
+	cub->run = TRUE;
 	cub->data->no = NULL;
 	cub->data->so = NULL;
 	cub->data->we = NULL;
@@ -29,12 +30,13 @@ void	player_config(t_cub *cub)
 {
 	cub->player->x = -1;
 	cub->player->y = -1;
+	cub->player->ver_dir = 0;
+	cub->player->hor_dir = 0;
 	cub->player->turndir = 0;
 	cub->player->angle = 0;
 	cub->player->fov = 60 * (M_PI / 180);
 	cub->player->turnspeed = 5 * (M_PI / 180);
-	cub->player->movespeed = 10;
-	ft_bzero(cub->player->key, 8 * sizeof(int));
+	cub->player->movespeed = 5;
 }
 
 void	initialize(t_cub *cub)
