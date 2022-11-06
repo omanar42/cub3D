@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/04 21:00:26 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/06 12:36:46 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CUB3D_H
 
 # include <mlx.h>
+# include <limits.h>
 # include <math.h>
 # include <libft.h>
 # include <stdio.h>

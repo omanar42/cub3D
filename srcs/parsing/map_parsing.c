@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 16:37:07 by omanar            #+#    #+#             */
-/*   Updated: 2022/10/12 00:16:26 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/06 13:49:31 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,7 @@ void	map_parsing(t_cub *cub, char *line, int fd)
 		free(tmp);
 		line = get_next_line(fd);
 	}
+	cub->data->window_width = cub->data->width * TILE_SIZE;
+	cub->data->window_height = cub->data->height * TILE_SIZE;
 	free(line);
 }

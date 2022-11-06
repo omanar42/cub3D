@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/04 21:27:00 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/06 18:38:01 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ void draw_line(t_cub *cub, int endx, int endy)
 
 void	set_cub(t_cub *cub)
 {
-	cub->img->img = mlx_new_image(cub->mlxdata->mlx, WINW
-			* MINIMAP_SCALE_FACTOR, WINH * MINIMAP_SCALE_FACTOR);
+	cub->img->img = mlx_new_image(cub->mlxdata->mlx, cub->data->window_width
+			* MINIMAP_SCALE_FACTOR, cub->data->window_height * MINIMAP_SCALE_FACTOR);
 	cub->img->addr = mlx_get_data_addr(cub->img->img, &cub->img->bits_per_pixel,
 			&cub->img->line_length, &cub->img->endian);
-	cub->img->width = WINW * MINIMAP_SCALE_FACTOR;
-	cub->img->height = WINH * MINIMAP_SCALE_FACTOR;
+	cub->img->width = cub->data->window_width * MINIMAP_SCALE_FACTOR;
+	cub->img->height = cub->data->window_height * MINIMAP_SCALE_FACTOR;
 }
 
 void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
@@ -78,20 +78,32 @@ void	set_player(t_cub *cub)
 {
 	my_mlx_pixel_put(cub->img, cub->player->x * MINIMAP_SCALE_FACTOR,
 		cub->player->y * MINIMAP_SCALE_FACTOR, 0x00203FFF);
-	draw_line(cub, cub->player->x + (cos(cub->player->angle) * 30),
-		cub->player->y + (sin(cub->player->angle) * 30));
+	// draw_line(cub, cub->player->x + (cos(cub->player->angle) * 30),
+	// 	cub->player->y + (sin(cub->player->angle) * 30));
 }
 
-int	can_move(char **map, float x, float y)
+float 	get_width(char *line)
+{
+	int len;
+
+	len = ft_strlen(line);
+	return (len * TILE_SIZE);
+}
+
+int	can_move(t_data *data, float x, float y)
 {
 	int	x_index;
 	int	y_index;
 
-	if (x < 0 || x > WINW || y < 0 || y > WINH)
-		return (FALSE);
 	x_index = floor(x / TILE_SIZE);
 	y_index = floor(y / TILE_SIZE);
-	if (map[y_index][x_index] != '1')
+	if ( y < 0 || y > data->window_height)
+		return (FALSE);
+	if (x < 0 || x > get_width(data->map[y_index]))
+		return (FALSE);
+	// printf("x = %f, y= %f\n", x, y);
+	// printf("x = %d, y= %d\n", x_index, y_index);
+	if (data->map[y_index][x_index] != '1')
 		return (TRUE);
 	return (FALSE);
 }
@@ -114,16 +126,161 @@ void	move_player(t_cub *cub)
 	newy += (sin(cub->player->angle) * ver_step);
 	newy += (sin(cub->player->angle + M_PI / 2) * hor_step);
 
-	if (can_move(cub->data->map, cub->player->x + newx, cub->player->y))
+	if (can_move(cub->data, cub->player->x + newx, cub->player->y))
 		cub->player->x += newx;
-	if (can_move(cub->data->map, cub->player->x, cub->player->y + newy))
+	if (can_move(cub->data, cub->player->x, cub->player->y + newy))
 		cub->player->y += newy;
 }
 
-void	cast_ray(t_cub *cub, float	ray_angle)
+float	normalize_angle(float angle)
 {
-	draw_line(cub, cub->player->x + (cos(ray_angle) * 30),
-		cub->player->y + (sin(ray_angle) * 30));
+	angle = remainder(angle, (2 * M_PI));
+	if (angle < 0)
+		angle = (2 * M_PI) + angle;
+	return (angle);
+}
+
+float	distance_between_points(float x1, float y1, float x2, float y2)
+{
+	return (sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))));
+}
+
+float get_distance(t_cub *cub, int wall_hit, float wall_hit_x, float wall_hit_y)
+{
+	if (wall_hit)
+		return (distance_between_points(cub->player->x, cub->player->y, wall_hit_x, wall_hit_y));
+	else
+		return (INT_MAX);
+}
+
+void	cast_ray(t_cub *cub, float ray_angle, int i)
+{
+	ray_angle = normalize_angle(ray_angle);
+
+	int is_ray_facing_down = ray_angle > 0 && ray_angle < M_PI;
+	int is_ray_facing_up = !is_ray_facing_down;
+
+	int is_ray_facing_right = ray_angle < 0.5 * M_PI || ray_angle > 1.5 * M_PI;
+	int is_ray_facing_left = !is_ray_facing_right;
+
+	float xintercept;
+	float yintercept;
+
+	float xstep;
+	float ystep;
+
+	(void)i;
+	int found_horz_wall_hit = FALSE;
+	float horz_wall_hit_x = 0;
+	float horz_wall_hit_y = 0;
+	// int horz_wall_content = 0;
+
+	yintercept = floor(cub->player->y / TILE_SIZE) * TILE_SIZE;
+	if (is_ray_facing_down)
+		yintercept += TILE_SIZE;
+	xintercept = cub->player->x + (yintercept - cub->player->y) / tan(ray_angle);
+
+	ystep = TILE_SIZE;
+	if (is_ray_facing_up)
+		ystep *= -1;
+
+	xstep = TILE_SIZE / tan(ray_angle);
+	if (is_ray_facing_left && xstep > 0)
+		xstep *= -1;
+	if (is_ray_facing_right && xstep < 0)
+		xstep *= -1;
+
+	float next_horz_touch_x = xintercept;
+	float next_horz_touch_y = yintercept;
+	// if (is_ray_facing_up)
+	// 	next_horz_touch_y--;
+
+	while (next_horz_touch_x >= 0 && next_horz_touch_x <= cub->data->window_width && next_horz_touch_y >= 0 && next_horz_touch_y <= cub->data->window_height)
+	{
+		if (!can_move(cub->data, next_horz_touch_x, next_horz_touch_y - (is_ray_facing_up == TRUE)))
+		{
+			found_horz_wall_hit = TRUE;
+			horz_wall_hit_x = next_horz_touch_x;
+			horz_wall_hit_y = next_horz_touch_y;
+			// horz_wall_content = cub->data->map[(int)floor(y_to_check / TILE_SIZE)][(int)floor(x_to_check / TILE_SIZE)];
+			
+			// draw_line(cub, horz_wall_hit_x, horz_wall_hit_y);
+			break;
+		}
+		else
+		{
+			next_horz_touch_x += xstep;
+			next_horz_touch_y += ystep;
+		}
+	}
+
+	// Verticals
+
+	int found_vert_wall_hit = FALSE;
+	float vert_wall_hit_x = 0;
+	float vert_wall_hit_y = 0;
+
+	xintercept = floor(cub->player->x / TILE_SIZE) * TILE_SIZE;
+	if (is_ray_facing_right)
+		xintercept += TILE_SIZE;
+
+	yintercept = cub->player->y + (xintercept - cub->player->x) * tan(ray_angle);
+
+	xstep = TILE_SIZE;
+	if (is_ray_facing_left)
+		xstep *= -1;
+
+	ystep = TILE_SIZE * tan(ray_angle);
+	if (is_ray_facing_up && ystep > 0)
+		ystep *= -1;
+	if (is_ray_facing_down && ystep < 0)
+		ystep *= -1;
+
+	float next_vert_touch_x = xintercept;
+	float next_vert_touch_y = yintercept;
+
+	// if (is_ray_facing_left)
+	// 	next_vert_touch_x--;
+
+	while (next_vert_touch_x >= 0 && next_vert_touch_x <= cub->data->window_width && next_vert_touch_y >= 0 && next_vert_touch_y <= cub->data->window_height)
+	{
+		if (!can_move(cub->data, next_vert_touch_x - (is_ray_facing_left == TRUE), next_vert_touch_y))
+		{
+			found_vert_wall_hit = TRUE;
+			vert_wall_hit_x = next_vert_touch_x;
+			vert_wall_hit_y = next_vert_touch_y;
+			// vert_wall_content = cub->data->map[(int)floor(y_to_check / TILE_SIZE)][(int)floor(x_to_check / TILE_SIZE)];
+			break;
+		}
+		else
+		{
+			next_vert_touch_x += xstep;
+			next_vert_touch_y += ystep;
+		}
+	}
+
+	float horz_hit_distance = get_distance(cub, found_horz_wall_hit, horz_wall_hit_x, horz_wall_hit_y);
+	float vert_hit_distance = get_distance(cub, found_vert_wall_hit, vert_wall_hit_x, vert_wall_hit_y);
+
+	if (vert_hit_distance < horz_hit_distance)
+	{
+		cub->rays[i].distance = vert_hit_distance;
+		cub->rays[i].wall_hit_x = vert_wall_hit_x;
+		cub->rays[i].wall_hit_y = vert_wall_hit_y;
+		cub->rays[i].was_hit_vertical = TRUE;
+	}
+	else
+	{
+		cub->rays[i].distance = horz_hit_distance;
+		cub->rays[i].wall_hit_x = horz_wall_hit_x;
+		cub->rays[i].wall_hit_y = horz_wall_hit_y;
+		cub->rays[i].was_hit_vertical = FALSE;
+	}
+	cub->rays[i].angle = ray_angle;
+	cub->rays[i].is_ray_facing_down = is_ray_facing_down;
+	cub->rays[i].is_ray_facing_up = is_ray_facing_up;
+	cub->rays[i].is_ray_facing_left = is_ray_facing_left;
+	cub->rays[i].is_ray_facing_right = is_ray_facing_right;
 }
 
 void	set_rays(t_cub *cub)
@@ -134,11 +291,20 @@ void	set_rays(t_cub *cub)
 	ray_angle = cub->player->angle - (cub->player->fov / 2);
 
 	i = -1;
-	while (++i < 1)
+	while (++i < WINW)
 	{
-		cast_ray(cub, ray_angle);
+		cast_ray(cub, ray_angle, i);
 		ray_angle += cub->player->fov / WINW;
 	}
+}
+
+void	draw_rays(t_cub *cub)
+{
+	int	i;
+
+	i = -1;
+	while (++i < WINW)
+		draw_line(cub, cub->rays[i].wall_hit_x, cub->rays[i].wall_hit_y);
 }
 
 void	update(t_cub *cub) 
@@ -147,6 +313,7 @@ void	update(t_cub *cub)
 	set_player(cub);
 	move_player(cub);
 	set_rays(cub);
+	draw_rays(cub);
 }
 
 void	render(t_cub *cub)
@@ -155,7 +322,6 @@ void	render(t_cub *cub)
 		cub->mlxdata->win, cub->img->img,
 		(WINW - (WINW * MINIMAP_SCALE_FACTOR) - 10) * 0,
 		10 * 0);
-	// draw_rays(cub);
 	// draw_sprites(cub);
 }
 
