@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/06 18:38:01 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/07 12:29:16 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,12 @@ void	set_cub(t_cub *cub)
 			&cub->img->line_length, &cub->img->endian);
 	cub->img->width = cub->data->window_width * MINIMAP_SCALE_FACTOR;
 	cub->img->height = cub->data->window_height * MINIMAP_SCALE_FACTOR;
+	cub->cub->img = mlx_new_image(cub->mlxdata->mlx,
+			WINW, WINH);
+	cub->cub->addr = mlx_get_data_addr(cub->cub->img, &cub->cub->bits_per_pixel,
+			&cub->cub->line_length, &cub->cub->endian);
+	cub->cub->width = WINW;
+	cub->cub->height = WINH;
 }
 
 void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
@@ -276,6 +282,8 @@ void	cast_ray(t_cub *cub, float ray_angle, int i)
 		cub->rays[i].wall_hit_y = horz_wall_hit_y;
 		cub->rays[i].was_hit_vertical = FALSE;
 	}
+	if (cub->rays[i].distance == 0)
+		cub->rays[i].distance = 0.0001;
 	cub->rays[i].angle = ray_angle;
 	cub->rays[i].is_ray_facing_down = is_ray_facing_down;
 	cub->rays[i].is_ray_facing_up = is_ray_facing_up;
@@ -307,6 +315,45 @@ void	draw_rays(t_cub *cub)
 		draw_line(cub, cub->rays[i].wall_hit_x, cub->rays[i].wall_hit_y);
 }
 
+void	render_3d_wall(t_cub *cub, int i, int wall_top_pixel, int wall_bottom_pixel)
+{
+	int j;
+
+	j = 0;
+	while (j < wall_top_pixel)
+		my_mlx_pixel_put(cub->cub, i, j++, cub->data->ceiling);
+	while (j < wall_bottom_pixel)
+		my_mlx_pixel_put(cub->cub, i, j++, 0x00FFFFFF);
+	while (j < WINH)
+		my_mlx_pixel_put(cub->cub, i, j++, cub->data->floor);
+}
+
+void	generate_3d_projection(t_cub *cub)
+{
+	int		i;
+	float distance_proj_plane;
+	float correct_distance;
+	int wall_strip_height;
+	int wall_top_pixel;
+	int wall_bottom_pixel;
+
+	i = -1;
+	while (++i < WINW)
+	{
+		correct_distance = cub->rays[i].distance * cos(cub->rays[i].angle - cub->player->angle);
+		distance_proj_plane = (WINW / 2) / tan(cub->player->fov / 2);
+		wall_strip_height = (TILE_SIZE / correct_distance) * distance_proj_plane;
+		
+		wall_top_pixel = (WINH / 2) - (wall_strip_height / 2);
+		if (wall_top_pixel < 0)
+			wall_top_pixel = 0;
+		wall_bottom_pixel = (WINH / 2) + (wall_strip_height / 2);
+		if (wall_bottom_pixel > WINH)
+			wall_bottom_pixel = WINH;
+		render_3d_wall(cub, i, wall_top_pixel, wall_bottom_pixel);
+	}
+}
+
 void	update(t_cub *cub) 
 {
 	set_map(cub);
@@ -314,14 +361,18 @@ void	update(t_cub *cub)
 	move_player(cub);
 	set_rays(cub);
 	draw_rays(cub);
+	generate_3d_projection(cub);
 }
 
 void	render(t_cub *cub)
 {
+	// mlx_clear_window(cub->mlxdata->mlx, cub->mlxdata->win);
 	mlx_put_image_to_window(cub->mlxdata->mlx,
 		cub->mlxdata->win, cub->img->img,
 		(WINW - (WINW * MINIMAP_SCALE_FACTOR) - 10) * 0,
 		10 * 0);
+	mlx_put_image_to_window(cub->mlxdata->mlx,
+		cub->mlxdata->win, cub->cub->img, 0, 0);
 	// draw_sprites(cub);
 }
 

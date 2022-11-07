@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/06 12:36:46 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/06 19:19:48 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 # define WINW 1280
 # define WINH 720
 
-# define MINIMAP_SCALE_FACTOR 0.5
+# define MINIMAP_SCALE_FACTOR 0.3
 
 enum {
 	DIR_NO,
