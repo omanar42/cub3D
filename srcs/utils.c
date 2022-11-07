@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/07 12:29:16 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/07 12:45:09 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -322,8 +322,12 @@ void	render_3d_wall(t_cub *cub, int i, int wall_top_pixel, int wall_bottom_pixel
 	j = 0;
 	while (j < wall_top_pixel)
 		my_mlx_pixel_put(cub->cub, i, j++, cub->data->ceiling);
-	while (j < wall_bottom_pixel)
-		my_mlx_pixel_put(cub->cub, i, j++, 0x00FFFFFF);
+	while (j < wall_bottom_pixel) {
+		if (cub->rays[i].was_hit_vertical)
+			my_mlx_pixel_put(cub->cub, i, j++, 0x0E1C2D);
+		else
+			my_mlx_pixel_put(cub->cub, i, j++, 0xF8BF2D);
+	}
 	while (j < WINH)
 		my_mlx_pixel_put(cub->cub, i, j++, cub->data->floor);
 }
@@ -368,11 +372,11 @@ void	render(t_cub *cub)
 {
 	// mlx_clear_window(cub->mlxdata->mlx, cub->mlxdata->win);
 	mlx_put_image_to_window(cub->mlxdata->mlx,
-		cub->mlxdata->win, cub->img->img,
-		(WINW - (WINW * MINIMAP_SCALE_FACTOR) - 10) * 0,
-		10 * 0);
-	mlx_put_image_to_window(cub->mlxdata->mlx,
 		cub->mlxdata->win, cub->cub->img, 0, 0);
+	mlx_put_image_to_window(cub->mlxdata->mlx,
+		cub->mlxdata->win, cub->img->img,
+		(WINW - (cub->data->window_width * MINIMAP_SCALE_FACTOR) - 10),
+		10);
 	// draw_sprites(cub);
 }
 
