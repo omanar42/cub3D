@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/07 12:45:09 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/08 22:49:58 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,13 +296,11 @@ void	set_rays(t_cub *cub)
 	int		i;
 	float	ray_angle;
 
-	ray_angle = cub->player->angle - (cub->player->fov / 2);
-
 	i = -1;
 	while (++i < WINW)
 	{
+		ray_angle = cub->player->angle + atan((i - WINW / 2) / cub->player->dist_proj_plane); 
 		cast_ray(cub, ray_angle, i);
-		ray_angle += cub->player->fov / WINW;
 	}
 }
 
@@ -315,18 +313,40 @@ void	draw_rays(t_cub *cub)
 		draw_line(cub, cub->rays[i].wall_hit_x, cub->rays[i].wall_hit_y);
 }
 
-void	render_3d_wall(t_cub *cub, int i, int wall_top_pixel, int wall_bottom_pixel)
+void	render_3d_wall(t_cub *cub, int i, float wall_top_pixel, float wall_bottom_pixel, float wall_strip_height)
 {
 	int j;
+	int tex_x;
+	int tex_y;
+	char *dst;
+	t_img *texture;
 
 	j = 0;
 	while (j < wall_top_pixel)
 		my_mlx_pixel_put(cub->cub, i, j++, cub->data->ceiling);
-	while (j < wall_bottom_pixel) {
-		if (cub->rays[i].was_hit_vertical)
-			my_mlx_pixel_put(cub->cub, i, j++, 0x0E1C2D);
+
+	if (cub->rays[i].was_hit_vertical) {
+		tex_x = (int)(cub->rays[i].wall_hit_y * TEX_SIZE / TILE_SIZE) % TEX_SIZE;
+		if (cub->rays[i].is_ray_facing_left)
+			texture = cub->assets->ea;
 		else
-			my_mlx_pixel_put(cub->cub, i, j++, 0xF8BF2D);
+			texture = cub->assets->we;
+	}
+	else {
+		tex_x = (int)(cub->rays[i].wall_hit_x * TEX_SIZE / TILE_SIZE) % TEX_SIZE;
+		if (cub->rays[i].is_ray_facing_up)
+			texture = cub->assets->no;
+		else
+			texture = cub->assets->so;
+	}
+
+
+	while (j < wall_bottom_pixel) {
+		int dft = j + (wall_strip_height / 2) - (WINH / 2);
+		tex_y = (int)(dft * (float)TEX_SIZE / wall_strip_height) % TEX_SIZE;
+
+		dst = texture->addr + tex_y * texture->line_length + tex_x * (texture->bits_per_pixel / 8);
+		my_mlx_pixel_put(cub->cub, i, j++, *(unsigned int *)dst);
 	}
 	while (j < WINH)
 		my_mlx_pixel_put(cub->cub, i, j++, cub->data->floor);
@@ -335,18 +355,17 @@ void	render_3d_wall(t_cub *cub, int i, int wall_top_pixel, int wall_bottom_pixel
 void	generate_3d_projection(t_cub *cub)
 {
 	int		i;
-	float distance_proj_plane;
 	float correct_distance;
-	int wall_strip_height;
-	int wall_top_pixel;
-	int wall_bottom_pixel;
+	float wall_strip_height;
+	float wall_top_pixel;
+	float wall_bottom_pixel;
 
 	i = -1;
 	while (++i < WINW)
 	{
 		correct_distance = cub->rays[i].distance * cos(cub->rays[i].angle - cub->player->angle);
-		distance_proj_plane = (WINW / 2) / tan(cub->player->fov / 2);
-		wall_strip_height = (TILE_SIZE / correct_distance) * distance_proj_plane;
+		cub->player->dist_proj_plane = (WINW / 2) / tan(cub->player->fov / 2);
+		wall_strip_height = (TILE_SIZE / correct_distance) * cub->player->dist_proj_plane;
 		
 		wall_top_pixel = (WINH / 2) - (wall_strip_height / 2);
 		if (wall_top_pixel < 0)
@@ -354,7 +373,7 @@ void	generate_3d_projection(t_cub *cub)
 		wall_bottom_pixel = (WINH / 2) + (wall_strip_height / 2);
 		if (wall_bottom_pixel > WINH)
 			wall_bottom_pixel = WINH;
-		render_3d_wall(cub, i, wall_top_pixel, wall_bottom_pixel);
+		render_3d_wall(cub, i, wall_top_pixel, wall_bottom_pixel, wall_strip_height);
 	}
 }
 
@@ -373,10 +392,10 @@ void	render(t_cub *cub)
 	// mlx_clear_window(cub->mlxdata->mlx, cub->mlxdata->win);
 	mlx_put_image_to_window(cub->mlxdata->mlx,
 		cub->mlxdata->win, cub->cub->img, 0, 0);
-	mlx_put_image_to_window(cub->mlxdata->mlx,
-		cub->mlxdata->win, cub->img->img,
-		(WINW - (cub->data->window_width * MINIMAP_SCALE_FACTOR) - 10),
-		10);
+	// mlx_put_image_to_window(cub->mlxdata->mlx,
+	// 	cub->mlxdata->win, cub->img->img,
+	// 	(WINW - (cub->data->window_width * MINIMAP_SCALE_FACTOR) - 10),
+	// 	10);
 	// draw_sprites(cub);
 }
 

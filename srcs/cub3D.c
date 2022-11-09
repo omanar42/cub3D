@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:31 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/07 12:24:05 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/08 22:13:05 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,40 @@ void	init_window(t_cub *cub)
 	cub->rays = malloc(sizeof(t_ray) * WINW + 1);
 	if (!cub->rays)
 		exit_strerr("malloc", errno);
+}
+
+// tyr this for norm
+// t_image	ft_new_sprite(void *mlx, char *path)
+// {
+// 	t_image	img;
+	
+// 	img.pointer = mlx_xpm_file_to_image(mlx, path, &img.size.x, &img.size.y);
+// 	img.pixels  = mlx_get_data_addr(img.reference, &img.bits_per_pixel, &img.line_size, &img.endian);
+// 	return (img);
+// }
+
+void	init_textures(t_cub *cub)
+{
+	cub->assets->no->img = mlx_xpm_file_to_image(cub->mlxdata->mlx,
+			cub->data->no, &cub->assets->width, &cub->assets->height);
+	cub->assets->no->addr = mlx_get_data_addr(cub->assets->no->img,
+			&cub->assets->no->bits_per_pixel, &cub->assets->no->line_length,
+			&cub->assets->no->endian);
+	cub->assets->so->img = mlx_xpm_file_to_image(cub->mlxdata->mlx, cub->data->so,
+			&cub->assets->width, &cub->assets->height);
+	cub->assets->so->addr = mlx_get_data_addr(cub->assets->so->img,
+			&cub->assets->so->bits_per_pixel, &cub->assets->so->line_length,
+			&cub->assets->so->endian);
+	cub->assets->we->img = mlx_xpm_file_to_image(cub->mlxdata->mlx, cub->data->we,
+			&cub->assets->width, &cub->assets->height);
+	cub->assets->we->addr = mlx_get_data_addr(cub->assets->we->img,
+			&cub->assets->we->bits_per_pixel, &cub->assets->we->line_length,
+			&cub->assets->we->endian);
+	cub->assets->ea->img = mlx_xpm_file_to_image(cub->mlxdata->mlx, cub->data->ea,
+			&cub->assets->width, &cub->assets->height);
+	cub->assets->ea->addr = mlx_get_data_addr(cub->assets->ea->img,
+			&cub->assets->ea->bits_per_pixel, &cub->assets->ea->line_length,
+			&cub->assets->ea->endian);
 }
 
 int	distroy_event(int keycode, t_cub *cub)
@@ -128,6 +162,7 @@ int	main(int ac, char **av)
 	cub = (t_cub *)malloc(sizeof(t_cub));
 	parsing(cub, av[1]);
 	init_window(cub);
+	init_textures(cub);
 	setup(cub);
 	mlx_loop_hook(cub->mlxdata->mlx, loop_hook, cub);
 	mlx_loop(cub->mlxdata->mlx);

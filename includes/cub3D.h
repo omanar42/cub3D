@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/06 19:19:48 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/08 22:43:41 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 # define TRUE 1
 # define FALSE 0
 # define TILE_SIZE 32
+# define TEX_SIZE 1280
 # define WINW 1280
 # define WINH 720
 
@@ -81,6 +82,7 @@ typedef struct s_player {
 	float	movespeed;
 	int		turndir;
 	float	turnspeed;
+	float	dist_proj_plane;
 }	t_player;
 
 typedef struct s_ray

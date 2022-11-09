@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 18:03:25 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/04 18:53:34 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/08 22:15:44 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	player_config(t_cub *cub)
 	cub->player->fov = 60 * (M_PI / 180);
 	cub->player->turnspeed = 5 * (M_PI / 180);
 	cub->player->movespeed = 5;
+	cub->player->dist_proj_plane = (WINW / 2) / tan(cub->player->fov / 2);
 }
 
 void	initialize(t_cub *cub)
