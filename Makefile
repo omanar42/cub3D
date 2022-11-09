@@ -20,7 +20,8 @@ SRCS	=	srcs/cub3D.c srcs/utils/error_handler.c $(LIBFT) \
 			srcs/parsing/parsing.c srcs/parsing/parsing_utils.c \
 			srcs/parsing/line_parsing.c srcs/parsing/map_parsing.c srcs/parsing/initializing.c \
 			srcs/get_next_line/get_next_line.c srcs/get_next_line/get_next_line_utils.c \
-			srcs/utils.c \
+			srcs/utils.c srcs/setup.c srcs/projection.c \
+			srcs/raycasting.c srcs/raycasting_utils.c
 
 define HEADER_M
    ______      __   _____ ____ 

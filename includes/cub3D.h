@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 19:00:42 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 23:20:41 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,7 @@ typedef struct s_cub {
 }	t_cub;
 
 // ----------------------------  PARSING  ---------------------------- //
+
 void	parsing(t_cub *cub, char *str);
 void	file_checker(char *str);
 void	file_parsing(t_cub *cub, int fd);
@@ -173,6 +174,7 @@ void	texture_parsing(t_cub *cub, char *line, int token, int i);
 void	map_parsing(t_cub *cub, char *line, int fd);
 
 // --------------------------  PARSING UTILS ------------------------- //
+
 void	skipe_spaces(char *s, int *i);
 int		is_map(char *line);
 int		check_name(char *name);
@@ -187,25 +189,56 @@ void	check_border(t_cub *cub, char **map);
 void	init_data(t_cub *cub);
 void	initialize(t_cub *cub);
 void	player_config(t_cub *cub);
+void	init_window(t_cub *cub);
+void	init_textures(t_cub *cub);
 
 // -----------------------------  SETUP  ----------------------------- //
 
+void	setup(t_cub *cub);
+void	set_hooks(t_cub *cub);
 void	set_cub(t_cub *cub);
-void	my_pixel_put(t_img *img, int x, int y, int color);
 void	update(t_cub *cub);
 void	render(t_cub *cub);
-void	set_map(t_cub *cub);
-void	my_mlx_pixel_put(t_img *img, int x, int y, int color);
+
 // ---------------------------  RENDERING  --------------------------- //
 
+void	generate_3d_projection(t_cub *cub);
+void	render_3d_wall(t_cub *cub, int i, t_wall wall);
+void	draw_3d(t_cub *cub, t_wall wall, t_img *texture, int i);
+
+// ---------------------------  RAYCASTING  --------------------------- //
+
+void	set_rays(t_cub *cub);
+void	cast_ray(t_cub *cub, float ray_angle, int i);
+void	fill_ray(t_ray *ray, t_cast *dir, int boolean);
+t_cast	*cast_vert(t_cub *cub, float ray_angle, int i);
+t_cast	*cast_horz(t_cub *cub, float ray_angle, int i);
+
+// ---------------------------  RAYCASTING UTILS --------------------------- //
+
+float	normalize_angle(float angle);
+float	get_distance(t_cub *cub, t_cast *dir);
+float	distance_between_points(float x1, float y1, float x2, float y2);
+void	next_touch_horz(t_cub *cub, t_cast *horz, int i);
+void	next_touch_vert(t_cub *cub, t_cast	*vert, int i);
 
 // -----------------------------  HOOKS ------------------------------ //
 
+int		key_press(int keycode, t_cub *cub);
+int		key_release(int keycode, t_cub *cub);
+int		distroy_event(int keycode, t_cub *cub);
+int		loop_hook(t_cub *cub);
 
 // -----------------------------  UTILS ------------------------------ //
 
+t_img	*new_sprite(void *mlx, char *path);
+void	my_mlx_pixel_put(t_img *img, int x, int y, int color);
+void	move_player(t_cub *cub);
+int		can_move(t_data *data, float x, float y);
+float	get_width(char *line);
 
 // -----------------------------  EXITS  ----------------------------- //
+
 void	exit_str(char *str);
 void	exit_success(char *str);
 void	exit_error(char *str, char *err);
