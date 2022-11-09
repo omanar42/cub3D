@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 16:24:03 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 19:00:42 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@
 # define TRUE 1
 # define FALSE 0
 # define TILE_SIZE 32
-# define TEX_SIZE 1280
 # define WINW 1280
 # define WINH 720
 
@@ -85,18 +84,27 @@ typedef struct s_player {
 	float	dist_proj_plane;
 }	t_player;
 
+typedef struct s_wall
+{
+	int		dft;
+	int		tex_x;
+	int		tex_y;
+	float	top_pixel;
+	float	bottom_pixel;
+	float	strip_height;
+	float	correct_distance;
+}	t_wall;
+
 typedef struct s_cast
 {
-	float xstep;
-	float ystep;
-	float xintercept;
-	float yintercept;
-	float wall_hit_x;
-	float wall_hit_y;
-	float next_touch_x;
-	float next_touch_y;
-	float hit_distance;
-	int found_wall_hit;
+	float	xstep;
+	float	ystep;
+	float	wall_hit_x;
+	float	wall_hit_y;
+	float	next_touch_x;
+	float	next_touch_y;
+	float	hit_distance;
+	int		found_wall_hit;
 }	t_cast;
 
 typedef struct s_ray

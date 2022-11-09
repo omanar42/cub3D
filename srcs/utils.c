@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 16:44:35 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 19:07:21 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,13 +146,36 @@ float	distance_between_points(float x1, float y1, float x2, float y2)
 	return (sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))));
 }
 
-float	get_distance(t_cub *cub, int wall_hit, float wall_hit_x, float wall_hit_y)
+float	get_distance(t_cub *cub, t_cast *dir)
 {
-	if (wall_hit)
+	if (dir->found_wall_hit)
 		return (distance_between_points(cub->player->x,
-				cub->player->y, wall_hit_x, wall_hit_y));
+				cub->player->y, dir->wall_hit_x, dir->wall_hit_y));
 	else
 		return (INT_MAX);
+}
+
+void	next_touch_horz(t_cub *cub, t_cast *horz, int i)
+{
+	while (horz->next_touch_x >= 0
+		&& horz->next_touch_x <= cub->data->window_width
+		&& horz->next_touch_y >= 0
+		&& horz->next_touch_y <= cub->data->window_height)
+	{
+		if (!can_move(cub->data, horz->next_touch_x,
+				horz->next_touch_y - (cub->rays[i].is_ray_facing_up == TRUE)))
+		{
+			horz->found_wall_hit = TRUE;
+			horz->wall_hit_x = horz->next_touch_x;
+			horz->wall_hit_y = horz->next_touch_y;
+			break ;
+		}
+		else
+		{
+			horz->next_touch_x += horz->xstep;
+			horz->next_touch_y += horz->ystep;
+		}
+	}
 }
 
 t_cast	*cast_horz(t_cub *cub, float ray_angle, int i)
@@ -163,46 +186,45 @@ t_cast	*cast_horz(t_cub *cub, float ray_angle, int i)
 	horz->found_wall_hit = FALSE;
 	horz->wall_hit_x = 0;
 	horz->wall_hit_y = 0;
-
-	horz->yintercept = floor(cub->player->y / TILE_SIZE) * TILE_SIZE;
+	horz->next_touch_y = floor(cub->player->y / TILE_SIZE) * TILE_SIZE;
 	if (cub->rays[i].is_ray_facing_down)
-		horz->yintercept += TILE_SIZE;
-	horz->xintercept = cub->player->x + (horz->yintercept - cub->player->y) / tan(ray_angle);
-
+		horz->next_touch_y += TILE_SIZE;
+	horz->next_touch_x = cub->player->x
+		+ (horz->next_touch_y - cub->player->y) / tan(ray_angle);
 	horz->ystep = TILE_SIZE;
 	if (cub->rays[i].is_ray_facing_up)
 		horz->ystep *= -1;
-
 	horz->xstep = TILE_SIZE / tan(ray_angle);
 	if (cub->rays[i].is_ray_facing_left && horz->xstep > 0)
 		horz->xstep *= -1;
 	if (cub->rays[i].is_ray_facing_right && horz->xstep < 0)
 		horz->xstep *= -1;
+	next_touch_horz(cub, horz, i);
+	return (horz);
+}
 
-	horz->next_touch_x = horz->xintercept;
-	horz->next_touch_y = horz->yintercept;
-	// if (is_ray_facing_up)
-	// 	next_horz_touch_y--;
-
-	while (horz->next_touch_x >= 0 && horz->next_touch_x <= cub->data->window_width && horz->next_touch_y >= 0 && horz->next_touch_y <= cub->data->window_height)
+void	next_touch_vert(t_cub *cub, t_cast	*vert, int i)
+{
+	while (vert->next_touch_x >= 0
+		&& vert->next_touch_x <= cub->data->window_width
+		&& vert->next_touch_y >= 0
+		&& vert->next_touch_y <= cub->data->window_height)
 	{
-		if (!can_move(cub->data, horz->next_touch_x, horz->next_touch_y - (cub->rays[i].is_ray_facing_up == TRUE)))
+		if (!can_move(cub->data,
+				vert->next_touch_x - (cub->rays[i].is_ray_facing_left == TRUE),
+				vert->next_touch_y))
 		{
-			horz->found_wall_hit = TRUE;
-			horz->wall_hit_x = horz->next_touch_x;
-			horz->wall_hit_y = horz->next_touch_y;
-			// wall_content = cub->data->map[(int)floor(y_to_check / TILE_SIZE)][(int)floor(x_to_check / TILE_SIZE)];
-			
-			// draw_line(cub, wall_hit_x, wall_hit_y);
-			break;
+			vert->found_wall_hit = TRUE;
+			vert->wall_hit_x = vert->next_touch_x;
+			vert->wall_hit_y = vert->next_touch_y;
+			break ;
 		}
 		else
 		{
-			horz->next_touch_x += horz->xstep;
-			horz->next_touch_y += horz->ystep;
+			vert->next_touch_x += vert->xstep;
+			vert->next_touch_y += vert->ystep;
 		}
 	}
-	return (horz);
 }
 
 t_cast	*cast_vert(t_cub *cub, float ray_angle, int i)
@@ -213,80 +235,50 @@ t_cast	*cast_vert(t_cub *cub, float ray_angle, int i)
 	vert->found_wall_hit = FALSE;
 	vert->wall_hit_x = 0;
 	vert->wall_hit_y = 0;
-
-	vert->xintercept = floor(cub->player->x / TILE_SIZE) * TILE_SIZE;
+	vert->next_touch_x = floor(cub->player->x / TILE_SIZE) * TILE_SIZE;
 	if (cub->rays[i].is_ray_facing_right)
-		vert->xintercept += TILE_SIZE;
-
-	vert->yintercept = cub->player->y + (vert->xintercept - cub->player->x) * tan(ray_angle);
-
+		vert->next_touch_x += TILE_SIZE;
+	vert->next_touch_y = cub->player->y
+		+ (vert->next_touch_x - cub->player->x) * tan(ray_angle);
 	vert->xstep = TILE_SIZE;
 	if (cub->rays[i].is_ray_facing_left)
 		vert->xstep *= -1;
-
 	vert->ystep = TILE_SIZE * tan(ray_angle);
 	if (cub->rays[i].is_ray_facing_up && vert->ystep > 0)
 		vert->ystep *= -1;
 	if (cub->rays[i].is_ray_facing_down && vert->ystep < 0)
 		vert->ystep *= -1;
-
-	vert->next_touch_x = vert->xintercept;
-	vert->next_touch_y = vert->yintercept;
-
-	// if (is_ray_facing_left)
-	// 	next_vert_touch_x--;
-
-	while (vert->next_touch_x >= 0 && vert->next_touch_x <= cub->data->window_width && vert->next_touch_y >= 0 && vert->next_touch_y <= cub->data->window_height)
-	{
-		if (!can_move(cub->data, vert->next_touch_x - (cub->rays[i].is_ray_facing_left == TRUE), vert->next_touch_y))
-		{
-			vert->found_wall_hit = TRUE;
-			vert->wall_hit_x = vert->next_touch_x;
-			vert->wall_hit_y = vert->next_touch_y;
-			// vert_wall_content = cub->data->map[(int)floor(y_to_check / TILE_SIZE)][(int)floor(x_to_check / TILE_SIZE)];
-			break;
-		}
-		else
-		{
-			vert->next_touch_x += vert->xstep;
-			vert->next_touch_y += vert->ystep;
-		}
-	}
+	next_touch_vert(cub, vert, i);
 	return (vert);
+}
+
+void	fill_ray(t_ray *ray, t_cast *dir, int boolean)
+{
+	ray->distance = dir->hit_distance;
+	ray->wall_hit_x = dir->wall_hit_x;
+	ray->wall_hit_y = dir->wall_hit_y;
+	ray->was_hit_vertical = boolean;
 }
 
 void	cast_ray(t_cub *cub, float ray_angle, int i)
 {
-	
 	t_cast	*horz;
 	t_cast	*vert;
 
 	ray_angle = normalize_angle(ray_angle);
-	cub->rays[i].is_ray_facing_down = ray_angle > 0 && ray_angle < M_PI;
+	cub->rays[i].is_ray_facing_down = (ray_angle > 0 && ray_angle < M_PI);
 	cub->rays[i].is_ray_facing_up = !cub->rays[i].is_ray_facing_down;
-	cub->rays[i].is_ray_facing_right = ray_angle < 0.5 * M_PI || ray_angle > 1.5 * M_PI;
+	cub->rays[i].is_ray_facing_right = (ray_angle < 0.5 * M_PI
+			|| ray_angle > 1.5 * M_PI);
 	cub->rays[i].is_ray_facing_left = !cub->rays[i].is_ray_facing_right;
-
 	horz = cast_horz(cub, ray_angle, i);
 	vert = cast_vert(cub, ray_angle, i);
-
-	horz->hit_distance = get_distance(cub, horz->found_wall_hit, horz->wall_hit_x, horz->wall_hit_y);
-	vert->hit_distance = get_distance(cub, vert->found_wall_hit, vert->wall_hit_x, vert->wall_hit_y);
-
+	horz->hit_distance = get_distance(cub, horz);
+	vert->hit_distance = get_distance(cub, vert);
 	if (vert->hit_distance < horz->hit_distance)
-	{
-		cub->rays[i].distance = vert->hit_distance;
-		cub->rays[i].wall_hit_x = vert->wall_hit_x;
-		cub->rays[i].wall_hit_y = vert->wall_hit_y;
-		cub->rays[i].was_hit_vertical = TRUE;
-	}
+		fill_ray(&cub->rays[i], vert, TRUE);
 	else
-	{
-		cub->rays[i].distance = horz->hit_distance;
-		cub->rays[i].wall_hit_x = horz->wall_hit_x;
-		cub->rays[i].wall_hit_y = horz->wall_hit_y;
-		cub->rays[i].was_hit_vertical = FALSE;
-	}
+		fill_ray(&cub->rays[i], horz, FALSE);
 	if (cub->rays[i].distance == 0)
 		cub->rays[i].distance = 0.0001;
 	cub->rays[i].angle = ray_angle;
@@ -317,72 +309,73 @@ void	draw_rays(t_cub *cub)
 		draw_line(cub, cub->rays[i].wall_hit_x, cub->rays[i].wall_hit_y);
 }
 
-void	render_3d_wall(t_cub *cub, int i, float wall_top_pixel, float wall_bottom_pixel, float wall_strip_height)
+void	draw_3d(t_cub *cub, t_wall wall, t_img *texture, int i)
 {
 	int		j;
-	int		dft;
-	int		tex_x;
-	int		tex_y;
 	char	*dst;
-	t_img	*texture;
 
 	j = 0;
-	while (j < wall_top_pixel)
+	while (j < wall.top_pixel)
 		my_mlx_pixel_put(cub->cub, i, j++, cub->data->ceiling);
-	if (cub->rays[i].was_hit_vertical)
+	while (j < wall.bottom_pixel)
 	{
-		tex_x = (int)(cub->rays[i].wall_hit_y
-				* TEX_SIZE / TILE_SIZE) % TEX_SIZE;
-		if (cub->rays[i].is_ray_facing_left)
-			texture = cub->assets->ea;
-		else
-			texture = cub->assets->we;
-	}
-	else
-	{
-		tex_x = (int)(cub->rays[i].wall_hit_x
-				* TEX_SIZE / TILE_SIZE) % TEX_SIZE;
-		if (cub->rays[i].is_ray_facing_up)
-			texture = cub->assets->no;
-		else
-			texture = cub->assets->so;
-	}
-	while (j < wall_bottom_pixel)
-	{
-		dft = j + (wall_strip_height / 2) - (WINH / 2);
-		tex_y = (int)(dft * (float)TEX_SIZE / wall_strip_height) % TEX_SIZE;
-		dst = texture->addr + tex_y * texture->line_length
-			+ tex_x * (texture->bits_per_pixel / 8);
+		wall.dft = j + (wall.strip_height / 2) - (WINH / 2);
+		wall.tex_y = (int)(wall.dft
+				* (float)texture->height / wall.strip_height)
+			% texture->height;
+		dst = texture->addr + wall.tex_y * texture->line_length
+			+ wall.tex_x * (texture->bits_per_pixel / 8);
 		my_mlx_pixel_put(cub->cub, i, j++, *(unsigned int *)dst);
 	}
 	while (j < WINH)
 		my_mlx_pixel_put(cub->cub, i, j++, cub->data->floor);
 }
 
+void	render_3d_wall(t_cub *cub, int i, t_wall wall)
+{
+	t_img	*texture;
+
+	if (cub->rays[i].was_hit_vertical)
+	{
+		if (cub->rays[i].is_ray_facing_left)
+			texture = cub->assets->ea;
+		else
+			texture = cub->assets->we;
+		wall.tex_x = (int)(cub->rays[i].wall_hit_y
+				* texture->width / TILE_SIZE) % texture->width;
+	}
+	else
+	{
+		if (cub->rays[i].is_ray_facing_up)
+			texture = cub->assets->no;
+		else
+			texture = cub->assets->so;
+		wall.tex_x = (int)(cub->rays[i].wall_hit_x
+				* texture->width / TILE_SIZE) % texture->width;
+	}
+	draw_3d(cub, wall, texture, i);
+}
+
 void	generate_3d_projection(t_cub *cub)
 {
 	int		i;
-	float	correct_distance;
-	float	wall_strip_height;
-	float	wall_top_pixel;
-	float	wall_bottom_pixel;
+	t_wall	wall;
 
 	i = -1;
 	while (++i < WINW)
 	{
-		correct_distance = cub->rays[i].distance
+		wall.correct_distance = cub->rays[i].distance
 			* cos(cub->rays[i].angle - cub->player->angle);
 		cub->player->dist_proj_plane = (WINW / 2) / tan(cub->player->fov / 2);
-		wall_strip_height = (TILE_SIZE / correct_distance)
+		wall.strip_height = (TILE_SIZE / wall.correct_distance)
 			* cub->player->dist_proj_plane;
-		wall_top_pixel = (WINH / 2) - (wall_strip_height / 2);
-		if (wall_top_pixel < 0)
-			wall_top_pixel = 0;
-		wall_bottom_pixel = (WINH / 2) + (wall_strip_height / 2);
-		if (wall_bottom_pixel > WINH)
-			wall_bottom_pixel = WINH;
-		render_3d_wall(cub, i, wall_top_pixel,
-			wall_bottom_pixel, wall_strip_height);
+		wall.top_pixel = (WINH / 2) - (wall.strip_height / 2);
+		if (wall.top_pixel < 0)
+			wall.top_pixel = 0;
+		wall.bottom_pixel = (WINH / 2) + (wall.strip_height / 2);
+		if (wall.bottom_pixel > WINH)
+			wall.bottom_pixel = WINH;
+		render_3d_wall(cub, i, wall);
 	}
 }
 
