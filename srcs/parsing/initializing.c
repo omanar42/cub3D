@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 18:03:25 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/08 22:15:44 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 12:03:11 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	init_data(t_cub *cub)
 {
-	cub->run = TRUE;
 	cub->data->no = NULL;
 	cub->data->so = NULL;
 	cub->data->we = NULL;
@@ -23,7 +22,6 @@ void	init_data(t_cub *cub)
 	cub->data->ceiling = -1;
 	cub->data->width = 0;
 	cub->data->height = 0;
-	cub->data->map[0] = NULL;
 }
 
 void	player_config(t_cub *cub)
@@ -47,16 +45,12 @@ void	initialize(t_cub *cub)
 	cub->img = malloc(sizeof(t_img));
 	cub->cub = malloc(sizeof(t_img));
 	cub->assets = malloc(sizeof(t_assets));
-	cub->assets->no = malloc(sizeof(t_img));
-	cub->assets->so = malloc(sizeof(t_img));
-	cub->assets->we = malloc(sizeof(t_img));
-	cub->assets->ea = malloc(sizeof(t_img));
 	cub->data = malloc(sizeof(t_data));
 	cub->player = malloc(sizeof(t_player));
 	cub->mlxdata = malloc(sizeof(t_mlxdata));
 	cub->data->map = ft_calloc(1, sizeof(char *));
-	if (!cub->img || !cub->cub || !cub->data
-		|| !cub->player || !cub->data->map || !cub->mlxdata)
+	if (!cub->img || !cub->cub || !cub->assets || !cub->data
+		|| !cub->player || !cub->mlxdata || !cub->data->map)
 		exit_strerr("malloc", errno);
 	init_data(cub);
 	player_config(cub);

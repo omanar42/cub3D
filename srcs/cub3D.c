@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:31 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/08 22:13:05 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 12:02:49 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,38 +26,26 @@ void	init_window(t_cub *cub)
 		exit_strerr("malloc", errno);
 }
 
-// tyr this for norm
-// t_image	ft_new_sprite(void *mlx, char *path)
-// {
-// 	t_image	img;
-	
-// 	img.pointer = mlx_xpm_file_to_image(mlx, path, &img.size.x, &img.size.y);
-// 	img.pixels  = mlx_get_data_addr(img.reference, &img.bits_per_pixel, &img.line_size, &img.endian);
-// 	return (img);
-// }
+t_img	*new_sprite(void *mlx, char *path)
+{
+	t_img	*sprite;
+
+	sprite = malloc(sizeof(t_img));
+	if (!sprite)
+		exit_strerr("malloc", errno);
+	sprite->img = mlx_xpm_file_to_image(mlx, path,
+			&sprite->width, &sprite->height);
+	sprite->addr = mlx_get_data_addr(sprite->img, &sprite->bits_per_pixel,
+			&sprite->line_length, &sprite->endian);
+	return (sprite);
+}
 
 void	init_textures(t_cub *cub)
 {
-	cub->assets->no->img = mlx_xpm_file_to_image(cub->mlxdata->mlx,
-			cub->data->no, &cub->assets->width, &cub->assets->height);
-	cub->assets->no->addr = mlx_get_data_addr(cub->assets->no->img,
-			&cub->assets->no->bits_per_pixel, &cub->assets->no->line_length,
-			&cub->assets->no->endian);
-	cub->assets->so->img = mlx_xpm_file_to_image(cub->mlxdata->mlx, cub->data->so,
-			&cub->assets->width, &cub->assets->height);
-	cub->assets->so->addr = mlx_get_data_addr(cub->assets->so->img,
-			&cub->assets->so->bits_per_pixel, &cub->assets->so->line_length,
-			&cub->assets->so->endian);
-	cub->assets->we->img = mlx_xpm_file_to_image(cub->mlxdata->mlx, cub->data->we,
-			&cub->assets->width, &cub->assets->height);
-	cub->assets->we->addr = mlx_get_data_addr(cub->assets->we->img,
-			&cub->assets->we->bits_per_pixel, &cub->assets->we->line_length,
-			&cub->assets->we->endian);
-	cub->assets->ea->img = mlx_xpm_file_to_image(cub->mlxdata->mlx, cub->data->ea,
-			&cub->assets->width, &cub->assets->height);
-	cub->assets->ea->addr = mlx_get_data_addr(cub->assets->ea->img,
-			&cub->assets->ea->bits_per_pixel, &cub->assets->ea->line_length,
-			&cub->assets->ea->endian);
+	cub->assets->no = new_sprite(cub->mlxdata->mlx, cub->data->no);
+	cub->assets->so = new_sprite(cub->mlxdata->mlx, cub->data->so);
+	cub->assets->we = new_sprite(cub->mlxdata->mlx, cub->data->we);
+	cub->assets->ea = new_sprite(cub->mlxdata->mlx, cub->data->ea);
 }
 
 int	distroy_event(int keycode, t_cub *cub)
@@ -71,7 +59,7 @@ int	distroy_event(int keycode, t_cub *cub)
 int	key_press(int keycode, t_cub *cub)
 {
 	if (keycode == ESC_KEY)
-		exit(0);
+		exit(EXIT_SUCCESS);
 	else if (keycode == W_KEY || keycode == UP_KEY)
 		cub->player->ver_dir = +1;
 	else if (keycode == S_KEY || keycode == DOWN_KEY)
@@ -144,12 +132,8 @@ void	set_map(t_cub *cub)
 
 int	loop_hook(t_cub *cub)
 {
-	if (cub->run)
-	{
-		update(cub);
-		render(cub);
-		// display_cub(cub);
-	}
+	update(cub);
+	render(cub);
 	return (0);
 }
 

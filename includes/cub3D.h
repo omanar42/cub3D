@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/08 22:43:41 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 15:57:06 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@
 # define WINW 1280
 # define WINH 720
 
-# define MINIMAP_SCALE_FACTOR 0.3
+# define MINIFICATION 0.3
 
 enum {
 	DIR_NO,
@@ -84,6 +84,24 @@ typedef struct s_player {
 	float	turnspeed;
 	float	dist_proj_plane;
 }	t_player;
+
+typedef struct s_cast
+{
+	float xstep;
+	float ystep;
+	float xintercept;
+	float yintercept;
+	float horz_wall_hit_x;
+	float horz_wall_hit_y;
+	float next_horz_touch_x;
+	float next_horz_touch_y;
+	int found_horz_wall_hit;
+	int is_ray_facing_up;
+	int is_ray_facing_down;
+	int is_ray_facing_right;
+	int is_ray_facing_left;
+
+}	t_cast;
 
 typedef struct s_ray
 {
@@ -132,7 +150,6 @@ typedef struct s_data {
 }	t_data;
 
 typedef struct s_cub {
-	int			run;
 	t_img		*img;
 	t_img		*cub;
 	t_ray		*rays;
