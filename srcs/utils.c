@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 16:32:36 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 16:44:35 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,22 +155,11 @@ float	get_distance(t_cub *cub, int wall_hit, float wall_hit_x, float wall_hit_y)
 		return (INT_MAX);
 }
 
-void	cast_ray(t_cub *cub, float ray_angle, int i)
+t_cast	*cast_horz(t_cub *cub, float ray_angle, int i)
 {
 	t_cast	*horz;
-	t_cast	*vert;
-
 
 	horz = (t_cast *)malloc(sizeof(t_cast));
-	vert = (t_cast *)malloc(sizeof(t_cast));
-	ray_angle = normalize_angle(ray_angle);
-
-
-	cub->rays[i].is_ray_facing_down = ray_angle > 0 && ray_angle < M_PI;
-	cub->rays[i].is_ray_facing_up = !cub->rays[i].is_ray_facing_down;
-
-	cub->rays[i].is_ray_facing_right = ray_angle < 0.5 * M_PI || ray_angle > 1.5 * M_PI;
-	cub->rays[i].is_ray_facing_left = !cub->rays[i].is_ray_facing_right;
 	horz->found_wall_hit = FALSE;
 	horz->wall_hit_x = 0;
 	horz->wall_hit_y = 0;
@@ -213,9 +202,14 @@ void	cast_ray(t_cub *cub, float ray_angle, int i)
 			horz->next_touch_y += horz->ystep;
 		}
 	}
+	return (horz);
+}
 
-	// Verticals
+t_cast	*cast_vert(t_cub *cub, float ray_angle, int i)
+{
+	t_cast	*vert;
 
+	vert = (t_cast *)malloc(sizeof(t_cast));
 	vert->found_wall_hit = FALSE;
 	vert->wall_hit_x = 0;
 	vert->wall_hit_y = 0;
@@ -258,6 +252,23 @@ void	cast_ray(t_cub *cub, float ray_angle, int i)
 			vert->next_touch_y += vert->ystep;
 		}
 	}
+	return (vert);
+}
+
+void	cast_ray(t_cub *cub, float ray_angle, int i)
+{
+	
+	t_cast	*horz;
+	t_cast	*vert;
+
+	ray_angle = normalize_angle(ray_angle);
+	cub->rays[i].is_ray_facing_down = ray_angle > 0 && ray_angle < M_PI;
+	cub->rays[i].is_ray_facing_up = !cub->rays[i].is_ray_facing_down;
+	cub->rays[i].is_ray_facing_right = ray_angle < 0.5 * M_PI || ray_angle > 1.5 * M_PI;
+	cub->rays[i].is_ray_facing_left = !cub->rays[i].is_ray_facing_right;
+
+	horz = cast_horz(cub, ray_angle, i);
+	vert = cast_vert(cub, ray_angle, i);
 
 	horz->hit_distance = get_distance(cub, horz->found_wall_hit, horz->wall_hit_x, horz->wall_hit_y);
 	vert->hit_distance = get_distance(cub, vert->found_wall_hit, vert->wall_hit_x, vert->wall_hit_y);
