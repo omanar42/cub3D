@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:45:35 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 22:53:39 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 23:37:31 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ t_img	*new_sprite(void *mlx, char *path)
 		exit_strerr("malloc", errno);
 	sprite->img = mlx_xpm_file_to_image(mlx, path,
 			&sprite->width, &sprite->height);
+	if (!sprite->img)
+		exit_strerr(path, errno);
 	sprite->addr = mlx_get_data_addr(sprite->img, &sprite->bits_per_pixel,
 			&sprite->line_length, &sprite->endian);
 	return (sprite);

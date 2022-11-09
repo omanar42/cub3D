@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 23:20:41 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 23:40:40 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ typedef struct s_cub {
 // ----------------------------  PARSING  ---------------------------- //
 
 void	parsing(t_cub *cub, char *str);
-void	file_checker(char *str);
+void	file_checker(char *str, char *extension);
 void	file_parsing(t_cub *cub, int fd);
 int		line_parsing(t_cub *cub, char *line);
 void	color_parsing(t_cub *cub, char *line, int token, int i);

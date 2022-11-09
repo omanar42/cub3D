@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 16:35:01 by omanar            #+#    #+#             */
-/*   Updated: 2022/10/11 22:38:01 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 23:42:19 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ void	texture_parsing(t_cub *cub, char *line, int token, int i)
 	skipe_spaces(line, &i);
 	tmp = ft_strdup(&line[i]);
 	path = ft_strtrim(tmp, "\n");
+	file_checker(path, ".xpm\0");
 	free(tmp);
 	if (token == TOKEN_NO && !cub->data->no)
 		cub->data->no = path;
