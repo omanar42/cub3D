@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 16:01:38 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 16:32:36 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,130 +157,130 @@ float	get_distance(t_cub *cub, int wall_hit, float wall_hit_x, float wall_hit_y)
 
 void	cast_ray(t_cub *cub, float ray_angle, int i)
 {
-	t_cast	*temp;
+	t_cast	*horz;
+	t_cast	*vert;
 
 
-	temp = (t_cast *)malloc(sizeof(t_cast));
+	horz = (t_cast *)malloc(sizeof(t_cast));
+	vert = (t_cast *)malloc(sizeof(t_cast));
 	ray_angle = normalize_angle(ray_angle);
 
 
-	temp->is_ray_facing_down = ray_angle > 0 && ray_angle < M_PI;
-	temp->is_ray_facing_up = !temp->is_ray_facing_down;
+	cub->rays[i].is_ray_facing_down = ray_angle > 0 && ray_angle < M_PI;
+	cub->rays[i].is_ray_facing_up = !cub->rays[i].is_ray_facing_down;
 
-	temp->is_ray_facing_right = ray_angle < 0.5 * M_PI || ray_angle > 1.5 * M_PI;
-	temp->is_ray_facing_left = !temp->is_ray_facing_right;
-	temp->found_horz_wall_hit = FALSE;
-	temp->horz_wall_hit_x = 0;
-	temp->horz_wall_hit_y = 0;
+	cub->rays[i].is_ray_facing_right = ray_angle < 0.5 * M_PI || ray_angle > 1.5 * M_PI;
+	cub->rays[i].is_ray_facing_left = !cub->rays[i].is_ray_facing_right;
+	horz->found_wall_hit = FALSE;
+	horz->wall_hit_x = 0;
+	horz->wall_hit_y = 0;
 
-	temp->yintercept = floor(cub->player->y / TILE_SIZE) * TILE_SIZE;
-	if (temp->is_ray_facing_down)
-		temp->yintercept += TILE_SIZE;
-	temp->xintercept = cub->player->x + (temp->yintercept - cub->player->y) / tan(ray_angle);
+	horz->yintercept = floor(cub->player->y / TILE_SIZE) * TILE_SIZE;
+	if (cub->rays[i].is_ray_facing_down)
+		horz->yintercept += TILE_SIZE;
+	horz->xintercept = cub->player->x + (horz->yintercept - cub->player->y) / tan(ray_angle);
 
-	temp->ystep = TILE_SIZE;
-	if (temp->is_ray_facing_up)
-		temp->ystep *= -1;
+	horz->ystep = TILE_SIZE;
+	if (cub->rays[i].is_ray_facing_up)
+		horz->ystep *= -1;
 
-	temp->xstep = TILE_SIZE / tan(ray_angle);
-	if (temp->is_ray_facing_left && temp->xstep > 0)
-		temp->xstep *= -1;
-	if (temp->is_ray_facing_right && temp->xstep < 0)
-		temp->xstep *= -1;
+	horz->xstep = TILE_SIZE / tan(ray_angle);
+	if (cub->rays[i].is_ray_facing_left && horz->xstep > 0)
+		horz->xstep *= -1;
+	if (cub->rays[i].is_ray_facing_right && horz->xstep < 0)
+		horz->xstep *= -1;
 
-	temp->next_horz_touch_x = temp->xintercept;
-	temp->next_horz_touch_y = temp->yintercept;
+	horz->next_touch_x = horz->xintercept;
+	horz->next_touch_y = horz->yintercept;
 	// if (is_ray_facing_up)
 	// 	next_horz_touch_y--;
 
-	while (temp->next_horz_touch_x >= 0 && temp->next_horz_touch_x <= cub->data->window_width && temp->next_horz_touch_y >= 0 && temp->next_horz_touch_y <= cub->data->window_height)
+	while (horz->next_touch_x >= 0 && horz->next_touch_x <= cub->data->window_width && horz->next_touch_y >= 0 && horz->next_touch_y <= cub->data->window_height)
 	{
-		if (!can_move(cub->data, temp->next_horz_touch_x, temp->next_horz_touch_y - (temp->is_ray_facing_up == TRUE)))
+		if (!can_move(cub->data, horz->next_touch_x, horz->next_touch_y - (cub->rays[i].is_ray_facing_up == TRUE)))
 		{
-			temp->found_horz_wall_hit = TRUE;
-			temp->horz_wall_hit_x = temp->next_horz_touch_x;
-			temp->horz_wall_hit_y = temp->next_horz_touch_y;
-			// horz_wall_content = cub->data->map[(int)floor(y_to_check / TILE_SIZE)][(int)floor(x_to_check / TILE_SIZE)];
+			horz->found_wall_hit = TRUE;
+			horz->wall_hit_x = horz->next_touch_x;
+			horz->wall_hit_y = horz->next_touch_y;
+			// wall_content = cub->data->map[(int)floor(y_to_check / TILE_SIZE)][(int)floor(x_to_check / TILE_SIZE)];
 			
-			// draw_line(cub, horz_wall_hit_x, horz_wall_hit_y);
+			// draw_line(cub, wall_hit_x, wall_hit_y);
 			break;
 		}
 		else
 		{
-			temp->next_horz_touch_x += temp->xstep;
-			temp->next_horz_touch_y += temp->ystep;
+			horz->next_touch_x += horz->xstep;
+			horz->next_touch_y += horz->ystep;
 		}
 	}
 
 	// Verticals
 
-	int found_vert_wall_hit = FALSE;
-	float vert_wall_hit_x = 0;
-	float vert_wall_hit_y = 0;
+	vert->found_wall_hit = FALSE;
+	vert->wall_hit_x = 0;
+	vert->wall_hit_y = 0;
 
-	temp->xintercept = floor(cub->player->x / TILE_SIZE) * TILE_SIZE;
-	if (temp->is_ray_facing_right)
-		temp->xintercept += TILE_SIZE;
+	vert->xintercept = floor(cub->player->x / TILE_SIZE) * TILE_SIZE;
+	if (cub->rays[i].is_ray_facing_right)
+		vert->xintercept += TILE_SIZE;
 
-	temp->yintercept = cub->player->y + (temp->xintercept - cub->player->x) * tan(ray_angle);
+	vert->yintercept = cub->player->y + (vert->xintercept - cub->player->x) * tan(ray_angle);
 
-	temp->xstep = TILE_SIZE;
-	if (temp->is_ray_facing_left)
-		temp->xstep *= -1;
+	vert->xstep = TILE_SIZE;
+	if (cub->rays[i].is_ray_facing_left)
+		vert->xstep *= -1;
 
-	temp->ystep = TILE_SIZE * tan(ray_angle);
-	if (temp->is_ray_facing_up && temp->ystep > 0)
-		temp->ystep *= -1;
-	if (temp->is_ray_facing_down && temp->ystep < 0)
-		temp->ystep *= -1;
+	vert->ystep = TILE_SIZE * tan(ray_angle);
+	if (cub->rays[i].is_ray_facing_up && vert->ystep > 0)
+		vert->ystep *= -1;
+	if (cub->rays[i].is_ray_facing_down && vert->ystep < 0)
+		vert->ystep *= -1;
 
-	float next_vert_touch_x = temp->xintercept;
-	float next_vert_touch_y = temp->yintercept;
+	vert->next_touch_x = vert->xintercept;
+	vert->next_touch_y = vert->yintercept;
 
 	// if (is_ray_facing_left)
 	// 	next_vert_touch_x--;
 
-	while (next_vert_touch_x >= 0 && next_vert_touch_x <= cub->data->window_width && next_vert_touch_y >= 0 && next_vert_touch_y <= cub->data->window_height)
+	while (vert->next_touch_x >= 0 && vert->next_touch_x <= cub->data->window_width && vert->next_touch_y >= 0 && vert->next_touch_y <= cub->data->window_height)
 	{
-		if (!can_move(cub->data, next_vert_touch_x - (temp->is_ray_facing_left == TRUE), next_vert_touch_y))
+		if (!can_move(cub->data, vert->next_touch_x - (cub->rays[i].is_ray_facing_left == TRUE), vert->next_touch_y))
 		{
-			found_vert_wall_hit = TRUE;
-			vert_wall_hit_x = next_vert_touch_x;
-			vert_wall_hit_y = next_vert_touch_y;
+			vert->found_wall_hit = TRUE;
+			vert->wall_hit_x = vert->next_touch_x;
+			vert->wall_hit_y = vert->next_touch_y;
 			// vert_wall_content = cub->data->map[(int)floor(y_to_check / TILE_SIZE)][(int)floor(x_to_check / TILE_SIZE)];
 			break;
 		}
 		else
 		{
-			next_vert_touch_x += temp->xstep;
-			next_vert_touch_y += temp->ystep;
+			vert->next_touch_x += vert->xstep;
+			vert->next_touch_y += vert->ystep;
 		}
 	}
 
-	float horz_hit_distance = get_distance(cub, temp->found_horz_wall_hit, temp->horz_wall_hit_x, temp->horz_wall_hit_y);
-	float vert_hit_distance = get_distance(cub, found_vert_wall_hit, vert_wall_hit_x, vert_wall_hit_y);
+	horz->hit_distance = get_distance(cub, horz->found_wall_hit, horz->wall_hit_x, horz->wall_hit_y);
+	vert->hit_distance = get_distance(cub, vert->found_wall_hit, vert->wall_hit_x, vert->wall_hit_y);
 
-	if (vert_hit_distance < horz_hit_distance)
+	if (vert->hit_distance < horz->hit_distance)
 	{
-		cub->rays[i].distance = vert_hit_distance;
-		cub->rays[i].wall_hit_x = vert_wall_hit_x;
-		cub->rays[i].wall_hit_y = vert_wall_hit_y;
+		cub->rays[i].distance = vert->hit_distance;
+		cub->rays[i].wall_hit_x = vert->wall_hit_x;
+		cub->rays[i].wall_hit_y = vert->wall_hit_y;
 		cub->rays[i].was_hit_vertical = TRUE;
 	}
 	else
 	{
-		cub->rays[i].distance = horz_hit_distance;
-		cub->rays[i].wall_hit_x = temp->horz_wall_hit_x;
-		cub->rays[i].wall_hit_y = temp->horz_wall_hit_y;
+		cub->rays[i].distance = horz->hit_distance;
+		cub->rays[i].wall_hit_x = horz->wall_hit_x;
+		cub->rays[i].wall_hit_y = horz->wall_hit_y;
 		cub->rays[i].was_hit_vertical = FALSE;
 	}
 	if (cub->rays[i].distance == 0)
 		cub->rays[i].distance = 0.0001;
 	cub->rays[i].angle = ray_angle;
-	cub->rays[i].is_ray_facing_down = temp->is_ray_facing_down;
-	cub->rays[i].is_ray_facing_up = temp->is_ray_facing_up;
-	cub->rays[i].is_ray_facing_left = temp->is_ray_facing_left;
-	cub->rays[i].is_ray_facing_right = temp->is_ray_facing_right;
+	free(horz);
+	free(vert);
 }
 
 void	set_rays(t_cub *cub)

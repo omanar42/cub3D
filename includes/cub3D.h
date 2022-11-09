@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 15:57:06 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/09 16:24:03 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,12 @@ typedef struct s_cast
 	float ystep;
 	float xintercept;
 	float yintercept;
-	float horz_wall_hit_x;
-	float horz_wall_hit_y;
-	float next_horz_touch_x;
-	float next_horz_touch_y;
-	int found_horz_wall_hit;
-	int is_ray_facing_up;
-	int is_ray_facing_down;
-	int is_ray_facing_right;
-	int is_ray_facing_left;
-
+	float wall_hit_x;
+	float wall_hit_y;
+	float next_touch_x;
+	float next_touch_y;
+	float hit_distance;
+	int found_wall_hit;
 }	t_cast;
 
 typedef struct s_ray
