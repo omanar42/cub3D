@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:45:35 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 23:37:31 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/10 12:57:54 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@ t_img	*new_sprite(void *mlx, char *path)
 
 void	init_textures(t_cub *cub)
 {
-	cub->assets->no = new_sprite(cub->mlxdata->mlx, cub->data->no);
-	cub->assets->so = new_sprite(cub->mlxdata->mlx, cub->data->so);
-	cub->assets->we = new_sprite(cub->mlxdata->mlx, cub->data->we);
-	cub->assets->ea = new_sprite(cub->mlxdata->mlx, cub->data->ea);
+	cub->sprites->no = new_sprite(cub->mlx, cub->data->no);
+	cub->sprites->so = new_sprite(cub->mlx, cub->data->so);
+	cub->sprites->we = new_sprite(cub->mlx, cub->data->we);
+	cub->sprites->ea = new_sprite(cub->mlx, cub->data->ea);
 }
 
 void	draw_3d(t_cub *cub, t_wall wall, t_img *texture, int i)
@@ -65,18 +65,18 @@ void	render_3d_wall(t_cub *cub, int i, t_wall wall)
 	if (cub->rays[i].was_hit_vertical)
 	{
 		if (cub->rays[i].is_ray_facing_left)
-			texture = cub->assets->ea;
+			texture = cub->sprites->we;
 		else
-			texture = cub->assets->we;
+			texture = cub->sprites->ea;
 		wall.tex_x = (int)(cub->rays[i].wall_hit_y
 				* texture->width / TILE_SIZE) % texture->width;
 	}
 	else
 	{
 		if (cub->rays[i].is_ray_facing_up)
-			texture = cub->assets->no;
+			texture = cub->sprites->no;
 		else
-			texture = cub->assets->so;
+			texture = cub->sprites->so;
 		wall.tex_x = (int)(cub->rays[i].wall_hit_x
 				* texture->width / TILE_SIZE) % texture->width;
 	}

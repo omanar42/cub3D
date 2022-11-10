@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:47:11 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 22:57:06 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/10 12:57:54 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,20 +58,14 @@ int	distroy_event(int keycode, t_cub *cub)
 
 void	set_hooks(t_cub *cub)
 {
-	mlx_hook(cub->mlxdata->win, 2, 0, key_press, cub);
-	mlx_hook(cub->mlxdata->win, 3, 0, key_release, cub);
-	mlx_hook(cub->mlxdata->win, 17, 0, distroy_event, cub);
+	mlx_hook(cub->win, 2, 0, key_press, cub);
+	mlx_hook(cub->win, 3, 0, key_release, cub);
+	mlx_hook(cub->win, 17, 0, distroy_event, cub);
 }
 
 void	set_cub(t_cub *cub)
 {
-	cub->img->img = mlx_new_image(cub->mlxdata->mlx, cub->data->window_width
-			* MINIFICATION, cub->data->window_height * MINIFICATION);
-	cub->img->addr = mlx_get_data_addr(cub->img->img, &cub->img->bits_per_pixel,
-			&cub->img->line_length, &cub->img->endian);
-	cub->img->width = cub->data->window_width * MINIFICATION;
-	cub->img->height = cub->data->window_height * MINIFICATION;
-	cub->cub->img = mlx_new_image(cub->mlxdata->mlx, WINW, WINH);
+	cub->cub->img = mlx_new_image(cub->mlx, WINW, WINH);
 	cub->cub->addr = mlx_get_data_addr(cub->cub->img, &cub->cub->bits_per_pixel,
 			&cub->cub->line_length, &cub->cub->endian);
 	cub->cub->width = WINW;

@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 23:40:40 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/10 13:00:55 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 # include <string.h>
 # include <get_next_line.h>
 
+// ----------------------------  KEYCODES  ---------------------------- //
+
 # define ESC_KEY 53
 # define A_KEY 0
 # define D_KEY 2
@@ -35,20 +37,14 @@
 # define UP_KEY 126
 # define DOWN_KEY 125
 
+// ----------------------------  CONSTANTS  ---------------------------- //
+
 # define TRUE 1
 # define FALSE 0
-# define TILE_SIZE 32
 # define WINW 1280
 # define WINH 720
-
+# define TILE_SIZE 32
 # define MINIFICATION 0.3
-
-enum {
-	DIR_NO,
-	DIR_SO,
-	DIR_WE,
-	DIR_EA,
-}	e_dir;
 
 enum {
 	TOKEN_NO,
@@ -118,49 +114,37 @@ typedef struct s_ray
 	int		is_ray_facing_down;
 	int		is_ray_facing_left;
 	int		is_ray_facing_right;
-	int		wall_hit_content;
 }	t_ray;
 
-typedef struct s_mlxdata {
-	void	*mlx;
-	void	*win;
-	void	*no_img;
-	void	*so_img;
-	void	*we_img;
-	void	*ea_img;
-}	t_mlxdata;
-
-typedef struct s_assets {
-	int		width;
-	int		height;
+typedef struct s_sprites {
 	t_img	*no;
 	t_img	*so;
 	t_img	*we;
 	t_img	*ea;
-}	t_assets;
+}	t_sprites;
 
 typedef struct s_data {
 	char	*no;
 	char	*so;
 	char	*we;
 	char	*ea;
+	char	**map;
 	int		floor;
 	int		ceiling;
 	int		width;
 	int		height;
 	int		window_width;
 	int		window_height;
-	char	**map;
 }	t_data;
 
 typedef struct s_cub {
-	t_img		*img;
+	void		*mlx;
+	void		*win;
 	t_img		*cub;
 	t_ray		*rays;
 	t_data		*data;
-	t_assets	*assets;
 	t_player	*player;
-	t_mlxdata	*mlxdata;
+	t_sprites	*sprites;
 }	t_cub;
 
 // ----------------------------  PARSING  ---------------------------- //

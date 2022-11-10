@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 18:03:25 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/09 12:03:11 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/10 12:58:19 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,13 @@ void	initialize(t_cub *cub)
 {
 	if (!cub)
 		exit_strerr("malloc", errno);
-	cub->img = malloc(sizeof(t_img));
 	cub->cub = malloc(sizeof(t_img));
-	cub->assets = malloc(sizeof(t_assets));
+	cub->sprites = malloc(sizeof(t_sprites));
 	cub->data = malloc(sizeof(t_data));
 	cub->player = malloc(sizeof(t_player));
-	cub->mlxdata = malloc(sizeof(t_mlxdata));
 	cub->data->map = ft_calloc(1, sizeof(char *));
-	if (!cub->img || !cub->cub || !cub->assets || !cub->data
-		|| !cub->player || !cub->mlxdata || !cub->data->map)
+	if (!cub->cub || !cub->sprites || !cub->data
+		|| !cub->player || !cub->data->map)
 		exit_strerr("malloc", errno);
 	init_data(cub);
 	player_config(cub);
