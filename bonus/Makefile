@@ -16,7 +16,7 @@ CC		=	gcc -Wall -Wextra -Werror -Iincludes -I libs/libft/includes
 DEBUG	=	-g -fsanitize=address
 MLXFLG	=	-framework OpenGL -framework AppKit
 LIBFT	=	libs/libft/libft.a
-MLX		=	minilibx/libmlx.a
+MLX		=	libs/minilibx/libmlx.a
 SRCS	=	srcs/cub3D.c $(LIBFT) $(MLX) \
 			srcs/parsing/parsing.c srcs/parsing/parsing_utils.c srcs/parsing/map_parsing.c \
 			srcs/parsing/line_parsing.c srcs/parsing/line_parsing_utls.c \
@@ -45,14 +45,18 @@ $(LIBFT):
 	@echo "\033[0;36m</ Compiling libft >\033[0m"
 	@make -C libs/libft
 
-$(NAME): $(SRCS) $(LIBFT)
+$(MLX):
+	@echo "\033[0;36m</ Compiling minilibx >\033[0m"
+	@make -C libs/minilibx
+
+$(NAME): $(SRCS) $(LIBFT) $(MLX)
 	@echo "\033[0;36m</ Compiling Cub3D >\033[0m"
 	@$(CC) $(MLXFLG) $(SRCS) -o $(NAME)
 	@echo "\033[1;32mCub3D has been compiled!\033[0m\n"
 
 run: all
 	@echo "\033[1;32m</ Running... >\033[0m\n"
-	@./$(NAME) maps/simple.cub
+	@./$(NAME) maps/map.cub
 
 debug: all
 	@$(CC) $(MLXFLG) $(DEBUG) $(SRCS) -o $(NAME)
@@ -60,6 +64,7 @@ debug: all
 
 clean:
 	@make clean -C libs/libft
+	@make clean -C libs/minilibx
 
 fclean: clean
 	@$(RM) $(NAME)

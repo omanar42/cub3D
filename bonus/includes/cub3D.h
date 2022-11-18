@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/18 14:52:39 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/18 23:33:35 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <get_next_line.h>
-# include "../minilibx/mlx.h"
+# include "../libs/minilibx/mlx.h"
 
 // ----------------------------  KEYCODES  ---------------------------- //
 
