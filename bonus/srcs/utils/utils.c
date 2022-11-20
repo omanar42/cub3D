@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 20:25:28 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/18 12:15:09 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 16:54:00 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ int	can_move(t_data *data, float x, float y)
 		return (FALSE);
 	if (x < 0 || x > get_width(data->map[y_index]))
 		return (FALSE);
-	if (data->map[y_index][x_index] != '1')
+	if (data->map[y_index][x_index] != '1'
+		&& data->map[y_index][x_index] != 'D')
 		return (TRUE);
 	return (FALSE);
 }

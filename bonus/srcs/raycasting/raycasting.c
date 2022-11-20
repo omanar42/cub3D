@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:41:43 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/17 20:55:40 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 16:33:18 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ t_cast	*cast_horz(t_cub *cub, float ray_angle, int i)
 	horz->wall_hit = FALSE;
 	horz->xhit = 0;
 	horz->yhit = 0;
+	horz->is_facing_door = 0;
 	horz->touch_y = floor(cub->player->y / TILE_SIZE) * TILE_SIZE;
 	if (cub->rays[i].is_facing_down)
 		horz->touch_y += TILE_SIZE;
@@ -45,6 +46,7 @@ t_cast	*cast_vert(t_cub *cub, float ray_angle, int i)
 	vert->wall_hit = FALSE;
 	vert->xhit = 0;
 	vert->yhit = 0;
+	vert->is_facing_door = 0;
 	vert->touch_x = floor(cub->player->x / TILE_SIZE) * TILE_SIZE;
 	if (cub->rays[i].is_facing_right)
 		vert->touch_x += TILE_SIZE;
@@ -68,6 +70,7 @@ void	fill_ray(t_ray *ray, t_cast *dir, int boolean)
 	ray->yhit = dir->yhit;
 	ray->hit_vertical = boolean;
 	ray->distance = dir->hit_distance;
+	ray->is_facing_door = dir->is_facing_door;
 }
 
 void	cast_ray(t_cub *cub, float ray_angle, int i)

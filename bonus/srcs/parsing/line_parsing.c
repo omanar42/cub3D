@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 22:23:39 by adiouane          #+#    #+#             */
-/*   Updated: 2022/11/18 17:32:04 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 15:49:17 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ int	check_name(char *name)
 		return (TOKEN_WE);
 	else if (!ft_strncmp(name, "EA", 3))
 		return (TOKEN_EA);
+	else if (!ft_strncmp(name, "DR", 3))
+		return (TOKEN_DR);
 	else if (!ft_strncmp(name, "F", 2))
 		return (TOKEN_F);
 	else if (!ft_strncmp(name, "C", 2))
@@ -83,14 +85,11 @@ void	color_parsing(t_cub *cub, char *line, int token, int i)
 
 void	texture_parsing(t_cub *cub, char *line, int token, int i)
 {
-	char	*tmp;
 	char	*path;
 
 	skipe_spaces(line, &i);
-	tmp = ft_strdup(&line[i]);
-	path = ft_strdup(tmp);
+	path = ft_strdup(&line[i]);
 	file_checker(path, ".xpm\0");
-	free(tmp);
 	if (token == TOKEN_NO && !cub->data->no)
 		cub->data->no = path;
 	else if (token == TOKEN_SO && !cub->data->so)
@@ -99,6 +98,8 @@ void	texture_parsing(t_cub *cub, char *line, int token, int i)
 		cub->data->we = path;
 	else if (token == TOKEN_EA && !cub->data->ea)
 		cub->data->ea = path;
+	else if (token == TOKEN_DR && !cub->data->dr)
+		cub->data->dr = path;
 	else
 		exit_error("Duplicate texture", line);
 	free(line);

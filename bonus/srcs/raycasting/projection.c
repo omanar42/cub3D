@@ -6,11 +6,27 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:45:35 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/17 21:02:35 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 16:54:15 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cub3D.h>
+
+int	can_ray_move(t_data *data, float x, float y)
+{
+	int	x_index;
+	int	y_index;
+
+	x_index = floor(x / TILE_SIZE);
+	y_index = floor(y / TILE_SIZE);
+	if (y < 0 || y > data->map_height)
+		return (FALSE);
+	if (x < 0 || x > get_width(data->map[y_index]))
+		return (FALSE);
+	if (data->map[y_index][x_index] != '1')
+		return (TRUE);
+	return (FALSE);
+}
 
 t_img	*new_sprite(void *mlx, char *path)
 {
@@ -26,14 +42,6 @@ t_img	*new_sprite(void *mlx, char *path)
 	sprite->addr = mlx_get_data_addr(sprite->img, &sprite->bits_per_pixel,
 			&sprite->line_length, &sprite->endian);
 	return (sprite);
-}
-
-void	init_textures(t_cub *cub)
-{
-	cub->sprites->no = new_sprite(cub->mlx, cub->data->no);
-	cub->sprites->so = new_sprite(cub->mlx, cub->data->so);
-	cub->sprites->we = new_sprite(cub->mlx, cub->data->we);
-	cub->sprites->ea = new_sprite(cub->mlx, cub->data->ea);
 }
 
 void	draw_wall(t_cub *cub, t_wall wall, t_img *texture, int i)
@@ -64,7 +72,9 @@ void	render_3d_wall(t_cub *cub, int i, t_wall wall)
 
 	if (cub->rays[i].hit_vertical)
 	{
-		if (cub->rays[i].is_facing_left)
+		if (cub->rays[i].is_facing_door)
+			texture = cub->sprites->dr;
+		else if (cub->rays[i].is_facing_left)
 			texture = cub->sprites->we;
 		else
 			texture = cub->sprites->ea;
@@ -73,7 +83,9 @@ void	render_3d_wall(t_cub *cub, int i, t_wall wall)
 	}
 	else
 	{
-		if (cub->rays[i].is_facing_up)
+		if (cub->rays[i].is_facing_door)
+			texture = cub->sprites->dr;
+		else if (cub->rays[i].is_facing_up)
 			texture = cub->sprites->no;
 		else
 			texture = cub->sprites->so;

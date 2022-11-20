@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:47:11 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/18 12:43:31 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 16:54:57 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int	key_press(int keycode, t_cub *cub)
 		cub->player->turndir = -1;
 	else if (keycode == CNTR_KEY)
 		control_hundler(cub);
+	else if (keycode == SPACE_KEY)
+		door_hundler(cub);
 	return (0);
 }
 

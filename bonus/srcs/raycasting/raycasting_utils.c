@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:43:53 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/17 21:04:46 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 17:00:02 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	get_touch_horz(t_cub *cub, t_cast *horz, int i)
 		&& horz->touch_y >= 0
 		&& horz->touch_y <= cub->data->map_height)
 	{
-		if (!can_move(cub->data, horz->touch_x,
+		if (!can_ray_move(cub->data, horz->touch_x,
 				horz->touch_y - (cub->rays[i].is_facing_up == TRUE)))
 		{
 			horz->wall_hit = TRUE;
@@ -51,20 +51,25 @@ void	get_touch_horz(t_cub *cub, t_cast *horz, int i)
 		}
 		else
 		{
+			if (is_facing_door(cub->data, horz->touch_x, horz->touch_y))
+			{
+				fill_dir(horz);
+				break ;
+			}
 			horz->touch_x += horz->xstep;
 			horz->touch_y += horz->ystep;
 		}
 	}
 }
 
-void	get_touch_vert(t_cub *cub, t_cast	*vert, int i)
+void	get_touch_vert(t_cub *cub, t_cast *vert, int i)
 {
 	while (vert->touch_x >= 0
 		&& vert->touch_x <= cub->data->map_width
 		&& vert->touch_y >= 0
 		&& vert->touch_y <= cub->data->map_height)
 	{
-		if (!can_move(cub->data,
+		if (!can_ray_move(cub->data,
 				vert->touch_x - (cub->rays[i].is_facing_left == TRUE),
 				vert->touch_y))
 		{
@@ -75,6 +80,11 @@ void	get_touch_vert(t_cub *cub, t_cast	*vert, int i)
 		}
 		else
 		{
+			if (is_facing_door(cub->data, vert->touch_x, vert->touch_y))
+			{
+				fill_dir(vert);
+				break ;
+			}
 			vert->touch_x += vert->xstep;
 			vert->touch_y += vert->ystep;
 		}

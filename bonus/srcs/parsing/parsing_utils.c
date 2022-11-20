@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adiouane <adiouane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 22:25:53 by adiouane          #+#    #+#             */
-/*   Updated: 2022/11/10 22:26:06 by adiouane         ###   ########.fr       */
+/*   Updated: 2022/11/20 12:58:51 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ int	is_map(char *line)
 	while (line[i])
 	{
 		if (line[i] != '1' && line[i] != '0' && line[i] != 'N'
-			&& line[i] != 'S' && line[i] != 'E'
-			&& line[i] != 'W' && line[i] != ' '
-			&& line[i] != '\n')
+			&& line[i] != 'S' && line[i] != 'E' && line[i] != 'O'
+			&& line[i] != 'W' && line[i] != 'D'
+			&& line[i] != ' ' && line[i] != '\n')
 			return (0);
 		i++;
 	}

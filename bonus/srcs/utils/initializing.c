@@ -6,11 +6,20 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 18:03:25 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/18 12:25:28 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 16:53:25 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cub3D.h>
+
+void	init_textures(t_cub *cub)
+{
+	cub->sprites->no = new_sprite(cub->mlx, cub->data->no);
+	cub->sprites->so = new_sprite(cub->mlx, cub->data->so);
+	cub->sprites->we = new_sprite(cub->mlx, cub->data->we);
+	cub->sprites->ea = new_sprite(cub->mlx, cub->data->ea);
+	cub->sprites->dr = new_sprite(cub->mlx, cub->data->dr);
+}
 
 void	init_data(t_cub *cub)
 {
@@ -18,6 +27,7 @@ void	init_data(t_cub *cub)
 	cub->data->so = NULL;
 	cub->data->we = NULL;
 	cub->data->ea = NULL;
+	cub->data->dr = NULL;
 	cub->data->floor = -1;
 	cub->data->ceiling = -1;
 	cub->data->width = 0;

@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 22:23:39 by adiouane          #+#    #+#             */
-/*   Updated: 2022/11/18 13:20:26 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 16:49:32 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void	if_something_missing(t_cub *cub)
 {
-	if (!cub->data->no || !cub->data->so || !cub->data->we || !cub->data->ea)
+	if (!cub->data->no || !cub->data->so || !cub->data->we
+		|| !cub->data->ea || !cub->data->dr)
 		exit_str("Missing texture");
 	else if (cub->data->floor == -1 || cub->data->ceiling == -1)
 		exit_str("Missing color");

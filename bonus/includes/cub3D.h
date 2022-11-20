@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/18 14:52:39 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/20 17:00:34 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <get_next_line.h>
-# include "../minilibx/mlx.h"
+# include "../libs/minilibx/mlx.h"
 
 // ----------------------------  KEYCODES  ---------------------------- //
 
@@ -37,6 +37,7 @@
 # define UP_KEY 126
 # define DOWN_KEY 125
 # define CNTR_KEY 256
+# define SPACE_KEY 49
 
 // ----------------------------  CONSTANTS  ---------------------------- //
 
@@ -52,6 +53,7 @@ enum e_TOKENS{
 	TOKEN_SO,
 	TOKEN_WE,
 	TOKEN_EA,
+	TOKEN_DR,
 	TOKEN_F,
 	TOKEN_C,
 	TOKEN_MAP,
@@ -102,6 +104,7 @@ typedef struct s_cast
 	float	touch_y;
 	float	hit_distance;
 	int		wall_hit;
+	int		is_facing_door;
 }	t_cast;
 
 typedef struct s_ray
@@ -115,6 +118,7 @@ typedef struct s_ray
 	int		is_facing_down;
 	int		is_facing_left;
 	int		is_facing_right;
+	int		is_facing_door;
 }	t_ray;
 
 typedef struct s_sprites {
@@ -122,6 +126,7 @@ typedef struct s_sprites {
 	t_img	*so;
 	t_img	*we;
 	t_img	*ea;
+	t_img	*dr;
 }	t_sprites;
 
 typedef struct s_data {
@@ -129,6 +134,7 @@ typedef struct s_data {
 	char	*so;
 	char	*we;
 	char	*ea;
+	char	*dr;
 	char	**map;
 	int		floor;
 	int		ceiling;
@@ -227,6 +233,7 @@ t_img	*new_sprite(void *mlx, char *path);
 void	my_mlx_pixel_put(t_img *img, int x, int y, int color);
 void	move_player(t_cub *cub);
 int		can_move(t_data *data, float x, float y);
+int		can_ray_move(t_data *data, float x, float y);
 float	get_width(char *line);
 
 // -----------------------------  MOUSE ------------------------------ //
@@ -235,6 +242,13 @@ int		mouse_move(t_cub *cub);
 int		mouse_hook(int button, int x, int y, t_cub *cub);
 int		mouse_move(t_cub *cub);
 void	control_hundler(t_cub *cub);
+
+// -----------------------------  DOOR ------------------------------- //
+
+int		is_facing_door(t_data *data, float x, float y);
+void	change_door(t_data *data, int x, int y);
+void	door_hundler(t_cub *cub);
+void	fill_dir(t_cast *dir);
 
 // -----------------------------  EXITS  ----------------------------- //
 
