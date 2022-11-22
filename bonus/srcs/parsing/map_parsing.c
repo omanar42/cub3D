@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 22:23:39 by adiouane          #+#    #+#             */
-/*   Updated: 2022/11/20 17:10:03 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/22 12:35:11 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ void	add_player(t_cub *cub, char **map, int y, int x)
 {
 	if (cub->player->x != -1 || cub->player->y != -1)
 		exit_str("Duplicate player");
-	cub->player->x = (x * TILE_SIZE);
-	cub->player->y = (y * TILE_SIZE);
+	cub->player->x = (x * TILE_SIZE) + 14;
+	cub->player->y = (y * TILE_SIZE) + 14;
 	if (map[y][x] == 'N')
 		cub->player->angle = 270 * (M_PI / 180);
 	else if (map[y][x] == 'S')

@@ -22,8 +22,10 @@ SRCS	=	srcs/cub3D.c $(LIBFT) $(MLX) \
 			srcs/parsing/line_parsing.c srcs/parsing/line_parsing_utls.c \
 			srcs/get_next_line/get_next_line.c srcs/get_next_line/get_next_line_utils.c \
 			srcs/utils/initializing.c srcs/utils/setup.c srcs/utils/utils.c \
-			srcs/utils/error_handler.c srcs/utils/mouse_handler.c srcs/utils/door_handler.c \
-			srcs/raycasting/projection.c srcs/raycasting/raycasting.c srcs/raycasting/raycasting_utils.c \
+			srcs/utils/error_handler.c srcs/utils/mouse_handler.c \
+			srcs/utils/door_handler.c srcs/utils/minimap.c \
+			srcs/raycasting/raycasting.c srcs/raycasting/raycasting_utils.c \
+			srcs/raycasting/projection.c \
 
 define HEADER_M
    ______      __   _____ ____ 

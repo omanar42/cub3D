@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/20 17:08:56 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/22 12:27:02 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,6 +249,14 @@ int		is_facing_door(t_data *data, float x, float y);
 void	change_door(t_data *data, int x, int y);
 void	door_hundler(t_cub *cub);
 void	fill_dir(t_cast *dir);
+
+// -----------------------------  MINIMAP ------------------------------- //
+
+void	generate_2d_map(t_cub *cub);
+void	generate_2d_player(t_cub *cub);
+void	render_line(t_cub *cub, int sx, int sy, int endx, int endy, int color);
+void	draw_wall2d(t_cub *cub, int x_pos, int y_pos, int color);
+void	draw_floor(t_cub *cub, int x_pos, int y_pos);
 
 // -----------------------------  EXITS  ----------------------------- //
 
