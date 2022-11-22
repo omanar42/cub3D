@@ -6,32 +6,13 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 12:25:07 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/22 15:11:07 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/22 21:56:27 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cub3D.h>
 
-void	draw_2d(t_cub *cub, int x_pos, int y_pos, int color)
-{
-	int	i;
-	int	j;
-
-	j = 0;
-	while (j < 12)
-	{
-		i = 0;
-		while (i < 12)
-		{
-			if (dbp(WINW - 200 + 106 - 10 + 6, 112, x_pos + i, y_pos + j) < 90)
-				my_mlx_pixel_put(cub->cub, x_pos + i, y_pos + j, color);
-			i++;
-		}
-		j++;
-	}
-}
-
-void	render_line(t_cub *cub, int sx, int sy, int endx, int endy)
+void	render_line(t_cub *cub, int endx, int endy)
 {
 	int		pixels;
 	double	pixelx;
@@ -39,13 +20,13 @@ void	render_line(t_cub *cub, int sx, int sy, int endx, int endy)
 	double	deltax;
 	double	deltay;
 
-	deltax = endx - sx;
-	deltay = endy - sy;
+	deltax = endx - 112;
+	deltay = endy - 112;
 	pixels = sqrt((deltax * deltax) + (deltay * deltay));
 	deltax /= pixels;
 	deltay /= pixels;
-	pixelx = sx;
-	pixely = sy;
+	pixelx = 112;
+	pixely = 112;
 	while (pixels)
 	{
 		my_mlx_pixel_put(cub->cub, pixelx, pixely, 0x00292a);
@@ -57,49 +38,83 @@ void	render_line(t_cub *cub, int sx, int sy, int endx, int endy)
 
 void	generate_2d_player(t_cub *cub)
 {
-	int	x_pos;
-	int	y_pos;
+	t_ints	ints;
 
-	x_pos = WINW - 200 + 106 - 10;
-	y_pos = 106;
-	draw_2d(cub, x_pos, y_pos, 0x00292a);
-	render_line(cub, x_pos + 6, y_pos + 6,
-		x_pos + 6 + (cos(cub->player->angle) * 20),
-		y_pos + 6 + (sin(cub->player->angle) * 20));
+	ints.x_coord = 106;
+	ints.y_coord = 106;
+	ints.y_index = 1;
+	while (++ints.y_index < 10)
+	{
+		ints.x_index = 1;
+		while (++ints.x_index < 10)
+			my_mlx_pixel_put(cub->cub, ints.x_coord + ints.x_index,
+				ints.y_coord + ints.y_index, 0x00292a);
+	}
+	render_line(cub,
+		ints.x_coord + 6 + (cos(cub->player->angle) * 15),
+		ints.y_coord + 6 + (sin(cub->player->angle) * 15));
+}
+
+void	draw_2d(t_cub *cub, t_ints ints, int color)
+{
+	int		i;
+	int		j;
+	float	radius;
+
+	j = -1;
+	while (++j < 12)
+	{
+		i = -1;
+		while (++i < 12)
+		{
+			radius = dbp(112, 112, ints.x_coord + i, ints.y_coord + j);
+			if (radius >= 85 && radius <= 88)
+				my_mlx_pixel_put(cub->cub, ints.x_coord + i,
+					ints.y_coord + j, 0x000000);
+			else if (radius < 85)
+				my_mlx_pixel_put(cub->cub, ints.x_coord + i,
+					ints.y_coord + j, color);
+		}
+	}
+}
+
+void	draw_minimap(t_cub *cub, t_ints ints)
+{
+	if (ints.y_index < 0 || ints.y_index >= cub->data->height)
+		draw_2d(cub, ints, 0x4b4b4b);
+	else if (ints.x_index < 0
+		|| ints.x_index >= (int)ft_strlen(cub->data->map[ints.y_index]))
+		draw_2d(cub, ints, 0x4b4b4b);
+	else
+	{
+		if (cub->data->map[ints.y_index][ints.x_index] == '1')
+			draw_2d(cub, ints, 0x4b4b4b);
+		else if (cub->data->map[ints.y_index][ints.x_index] == 'D')
+			draw_2d(cub, ints, 0x8B4000);
+		else if (cub->data->map[ints.y_index][ints.x_index] == 'O')
+			draw_2d(cub, ints, 0x5A5A8B);
+		else
+			draw_2d(cub, ints, cub->data->floor);
+	}
 }
 
 void	generate_2d_map(t_cub *cub)
 {
-	int	x_index;
-	int	y_index;
-	int	x_pos;
-	int	y_pos;
+	t_ints	ints;
 
-	y_pos = 10;
-	y_index = floor(cub->player->y / TILE_SIZE) - 8;
-	while (y_index < floor(cub->player->y / TILE_SIZE) + 8)
+	ints.y_coord = 10;
+	ints.y_index = floor(cub->player->y / TILE_SIZE) - 8;
+	while (ints.y_index < floor(cub->player->y / TILE_SIZE) + 8)
 	{
-		x_pos = WINW - 200;
-		x_index = floor(cub->player->x / TILE_SIZE) - 8;
-		while (x_index < floor(cub->player->x / TILE_SIZE) + 8)
+		ints.x_coord = 10;
+		ints.x_index = floor(cub->player->x / TILE_SIZE) - 8;
+		while (ints.x_index < floor(cub->player->x / TILE_SIZE) + 8)
 		{
-			if (x_index < 0 || y_index < 0 || y_index >= cub->data->height)
-				draw_2d(cub, x_pos, y_pos, 0x5A5A5A);
-			else if (x_index >= (int)ft_strlen(cub->data->map[y_index]))
-				draw_2d(cub, x_pos, y_pos, 0x5A5A5A);
-			else
-			{
-				if (cub->data->map[y_index][x_index] == '1')
-					draw_2d(cub, x_pos, y_pos, 0x5A5A5A);
-				else if (cub->data->map[y_index][x_index] == 'D')
-					draw_2d(cub, x_pos, y_pos, 0x8B4000);
-				else
-					draw_2d(cub, x_pos, y_pos, cub->data->floor);
-			}
-			x_pos += 12;
-			x_index++;
+			draw_minimap(cub, ints);
+			ints.x_coord += 12;
+			ints.x_index++;
 		}
-		y_pos += 12;
-		y_index++;
+		ints.y_coord += 12;
+		ints.y_index++;
 	}
 }

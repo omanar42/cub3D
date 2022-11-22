@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 19:11:08 by omanar            #+#    #+#             */
-/*   Updated: 2022/11/22 12:27:02 by omanar           ###   ########.fr       */
+/*   Updated: 2022/11/22 17:51:40 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,13 @@ enum e_TOKENS{
 	TOKEN_MAP,
 	TOKEN_ERROR,
 };
+
+typedef struct s_ints {
+	int	x_coord;
+	int	y_coord;
+	int	x_index;
+	int	y_index;
+}	t_ints;
 
 typedef struct s_img {
 	void	*img;
@@ -253,10 +260,10 @@ void	fill_dir(t_cast *dir);
 // -----------------------------  MINIMAP ------------------------------- //
 
 void	generate_2d_map(t_cub *cub);
+void	draw_minimap(t_cub *cub, t_ints ints);
+void	draw_2d(t_cub *cub, t_ints ints, int color);
 void	generate_2d_player(t_cub *cub);
-void	render_line(t_cub *cub, int sx, int sy, int endx, int endy, int color);
-void	draw_wall2d(t_cub *cub, int x_pos, int y_pos, int color);
-void	draw_floor(t_cub *cub, int x_pos, int y_pos);
+void	render_line(t_cub *cub, int endx, int endy);
 
 // -----------------------------  EXITS  ----------------------------- //
 
