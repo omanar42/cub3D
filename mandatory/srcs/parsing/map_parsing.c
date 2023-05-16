@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 22:23:39 by adiouane          #+#    #+#             */
-/*   Updated: 2022/11/18 22:26:42 by omanar           ###   ########.fr       */
+/*   Updated: 2023/05/16 07:44:32 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	checker(t_cub *cub, char **map)
 			if (map[i][j] == '0' || is_player(map[i][j]))
 			{
 				if (j > (int)ft_strlen(map[i + 1])
-					|| j > (int)ft_strlen(map[i - 1]))
+					|| j > (int)ft_strlen(map[i - 1]) || j == 0)
 					exit_str("Error: Invalid map");
 				if (map[i][j - 1] == ' ' || map[i][j - 1] == '\0'
 					|| map[i][j + 1] == ' ' || map[i][j + 1] == '\0'
